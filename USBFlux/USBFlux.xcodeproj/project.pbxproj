@@ -3,11 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0430E93720BEF9F00047F28C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0430E93620BEF9F00047F28C /* AppDelegate.m */; };
+		0430E93720BEF9F00047F28C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0430E93620BEF9F00047F28C /* AppDelegate.m */; settings = {COMPILER_FLAGS = "-Wpacked -Wpadded"; }; };
 		0430E93920BEF9F10047F28C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0430E93820BEF9F10047F28C /* Assets.xcassets */; };
 		0430E93C20BEF9F10047F28C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0430E93A20BEF9F10047F28C /* MainMenu.xib */; };
 		0430E93F20BEF9F10047F28C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0430E93E20BEF9F10047F28C /* main.m */; };
@@ -17,18 +17,23 @@
 		04D7270C215BD74000B29E2E /* Corellium.m in Sources */ = {isa = PBXBuildFile; fileRef = 04D7270B215BD74000B29E2E /* Corellium.m */; };
 		04D7270F215C13E800B29E2E /* PasswordEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 04D7270E215C13E800B29E2E /* PasswordEntry.m */; };
 		04D72717215C53DB00B29E2E /* SimpleTextInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 04D72716215C53DB00B29E2E /* SimpleTextInput.m */; };
-		DB0E4FBB223588E0003C07CF /* STHTTPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = DB0E4FB9223588E0003C07CF /* STHTTPRequest.m */; };
+		A573E11923B71AB10038EE5C /* STHTTPRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = DB0E4FBA223588E0003C07CF /* STHTTPRequest.h */; };
+		A573E11A23B71AB10038EE5C /* AppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 0430E93520BEF9F00047F28C /* AppDelegate.h */; };
+		A573E11B23B71AB10038EE5C /* Corellium.h in Headers */ = {isa = PBXBuildFile; fileRef = 04D7270A215BD74000B29E2E /* Corellium.h */; };
+		A573E11C23B71AB10038EE5C /* PasswordEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = 04D7270D215C13E800B29E2E /* PasswordEntry.h */; };
+		A573E11D23B71AB10038EE5C /* SimpleTextInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 04D72715215C53DB00B29E2E /* SimpleTextInput.h */; };
+		DB0E4FBB223588E0003C07CF /* STHTTPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = DB0E4FB9223588E0003C07CF /* STHTTPRequest.m */; settings = {COMPILER_FLAGS = "-Wfatal-errors"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0430E93220BEF9F00047F28C /* USBFlux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = USBFlux.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0430E93520BEF9F00047F28C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0430E93620BEF9F00047F28C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		0430E93820BEF9F10047F28C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0430E93820BEF9F10047F28C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets.xcassets; sourceTree = "<group>"; };
 		0430E93B20BEF9F10047F28C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		0430E93D20BEF9F10047F28C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0430E93E20BEF9F10047F28C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		0430E94020BEF9F10047F28C /* USBFlux.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = USBFlux.entitlements; sourceTree = "<group>"; };
+		0430E94020BEF9F10047F28C /* USBFlux.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = USBFlux.entitlements; sourceTree = "<group>"; };
 		0430E95120C00CA30047F28C /* AuthIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AuthIcon.png; sourceTree = "<group>"; };
 		0430E95320C02E5B0047F28C /* usbfluxd */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = usbfluxd; path = ../src/usbfluxd; sourceTree = "<group>"; };
 		047357A320DB2A9F0089445A /* terminate.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = terminate.sh; path = USBFlux/terminate.sh; sourceTree = "<group>"; };
@@ -96,11 +101,27 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		A573E11E23B71ACF0038EE5C /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A573E11923B71AB10038EE5C /* STHTTPRequest.h in Headers */,
+				A573E11A23B71AB10038EE5C /* AppDelegate.h in Headers */,
+				A573E11B23B71AB10038EE5C /* Corellium.h in Headers */,
+				A573E11C23B71AB10038EE5C /* PasswordEntry.h in Headers */,
+				A573E11D23B71AB10038EE5C /* SimpleTextInput.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		0430E93120BEF9F00047F28C /* USBFlux */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0430E94320BEF9F10047F28C /* Build configuration list for PBXNativeTarget "USBFlux" */;
 			buildPhases = (
+				A573E11E23B71ACF0038EE5C /* Headers */,
 				0430E92E20BEF9F00047F28C /* Sources */,
 				0430E92F20BEF9F00047F28C /* Frameworks */,
 				0430E93020BEF9F00047F28C /* Resources */,
@@ -134,7 +155,7 @@
 				};
 			};
 			buildConfigurationList = 0430E92D20BEF9F00047F28C /* Build configuration list for PBXProject "USBFlux" */;
-			compatibilityVersion = "Xcode 9.3";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -226,31 +247,60 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = ZT749D99SB;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				"GCC_ALTIVEC_EXTENSIONS[arch=ppc64]" = YES;
+				GCC_CHECK_RETURN_VALUE_OF_OPERATOR_NEW = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_FORCE_CPU_SUBTYPE_ALL = YES;
+				"GCC_MODEL_PPC64[arch=ppc64]" = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_SHADOW = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				GENERATE_PKGINFO_FILE = YES;
+				LD_GENERATE_MAP_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-g";
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wmissing-declarations",
+					"-Wredundant-decls",
+					"-Wpointer-arith",
+					"-Wwrite-strings",
+					"-Wswitch-default",
+					"-Wno-unused-parameter",
+				);
 			};
 			name = Debug;
 		};
@@ -286,7 +336,6 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -311,19 +360,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = XG264R6QP8;
 				INFOPLIST_FILE = USBFlux/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.corellium.USBFlux;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -336,14 +380,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = XG264R6QP8;
 				INFOPLIST_FILE = USBFlux/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.corellium.USBFlux;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};

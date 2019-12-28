@@ -8,6 +8,7 @@
 
 #import "PasswordEntry.h"
 
+/* TODO: move: */
 @interface PasswordEntry ()
 {
     NSTextField *inputUser;

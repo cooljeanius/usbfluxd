@@ -9,16 +9,26 @@
 #import "Corellium.h"
 #import "STHTTPRequest.h"
 
+#ifdef ALLOW_IVARS_IN_CLASS_EXTENSION
 @interface Corellium ()
 {
     NSString *username;
     NSString *password;
-    NSString* endpoint;
+    NSString *endpoint;
     id token;
 }
 @end
+#endif /* ALLOW_IVARS_IN_CLASS_EXTENSION */
 
 @implementation Corellium
+
+#ifdef DO_DYNAMIC_AT_TOP
+@dynamic domain;
+@dynamic username;
+@dynamic password;
+@dynamic endpoint;
+@dynamic token;
+#endif /* DO_DYNAMIC_AT_TOP */
 
 - (id)initWithDomain:(NSString*)domain username:(NSString*)u password:(NSString*)p
 {
@@ -174,4 +184,22 @@
     }
     return json;
 }
+
+#ifdef DO_SYNTHESIZE
+/* FIXME: I dunno what I am doing */
+@synthesize domain;
+@synthesize setDomain;
+@synthesize username;
+@synthesize password;
+@synthesize endpoint;
+@synthesize token;
+#elif defined(DO_DYNAMIC_AT_END)
+@dynamic domain;
+@dynamic setDomain;
+@dynamic username;
+@dynamic password;
+@dynamic endpoint;
+@dynamic token;
+#endif /* DO_SYNTHESIZE */
+
 @end

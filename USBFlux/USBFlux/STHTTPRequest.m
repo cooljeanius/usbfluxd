@@ -6,10 +6,15 @@
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
+#ifndef __has_feature
+# define __has_feature(foo) 0
+#endif /* !__has_feature */
+
 #if __has_feature(objc_arc)
 #else
 // see http://www.codeography.com/2011/10/10/making-arc-and-non-arc-play-nice.html
 #error This file must be compiled with ARC. Either turn on ARC for the project or use -fobjc-arc flag
+#include "fake_file_that_does_not_exist_and_should_never_exist_to_terminate_compilation.h"
 #endif
 
 #import <Cocoa/Cocoa.h>

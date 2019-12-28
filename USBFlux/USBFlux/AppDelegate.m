@@ -23,6 +23,7 @@ static AuthorizationRef authorization = nil;
 
 #define APPID CFSTR("com.corellium.USBFlux")
 
+/* TODO: move: */
 @interface AppDelegate ()
 {
     NSTimer *checkTimer;
@@ -35,14 +36,14 @@ static AuthorizationRef authorization = nil;
     BOOL autostart_after_config;
     BOOL onSite;
 }
-@property (weak) IBOutlet NSMenuItem *preferencesSeparator;
-@property (weak) IBOutlet NSMenuItem *preferencesItem;
-@property (weak) IBOutlet NSTextField *statusLabel;
-@property (weak) IBOutlet NSTextField *detailLabel;
-@property (weak) IBOutlet NSTextField *apiLabel;
-@property (weak) IBOutlet NSWindow *window;
-@property (weak) IBOutlet NSButton *startStopButton;
-@property (weak) IBOutlet NSButton *cbAutoStart;
+@property (assign) __weak IBOutlet NSMenuItem *preferencesSeparator;
+@property (assign) __weak IBOutlet NSMenuItem *preferencesItem;
+@property (assign) __weak IBOutlet NSTextField *statusLabel;
+@property (assign) __weak IBOutlet NSTextField *detailLabel;
+@property (assign) __weak IBOutlet NSTextField *apiLabel;
+@property (assign) __weak IBOutlet NSWindow *window;
+@property (assign) __weak IBOutlet NSButton *startStopButton;
+@property (assign) __weak IBOutlet NSButton *cbAutoStart;
 @end
 
 struct usbmuxd_header {
@@ -266,22 +267,22 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
 
 -(void)runCommandWithAuth:(AuthorizationRef)auth command:(char*)cmd arguments:(char*[])args
 {
-    FILE *pipe = NULL;
-    OSStatus status = AuthorizationExecuteWithPrivileges(auth, cmd, kAuthorizationFlagDefaults, args, &pipe);
+    FILE *fpipe = NULL;
+    OSStatus status = AuthorizationExecuteWithPrivileges(auth, cmd, kAuthorizationFlagDefaults, args, &fpipe);
     if (status != errAuthorizationSuccess) {
         NSLog(@"Failed to execute %s: %d", cmd, status);
     } else {
-        int stat;
-        wait(&stat);
-        if (pipe) {
-            fclose(pipe);
+        int stat_loc;
+        wait(&stat_loc);
+        if (fpipe) {
+            fclose(fpipe);
         }
     }
 }
 
 - (void)fixupUSBFluxDaemonPermissions
 {
-    char *command1 = "/usr/sbin/chown";
+    const char *command1 = "/usr/sbin/chown";
     char *args1[] = { "0:0", usbfluxd_path, terminate_path, NULL };
     [self runCommandWithAuth:authorization command:command1 arguments:args1];
 
@@ -361,12 +362,12 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
         argv[2] = "-m";
     }
     char *env[] = { NULL };
-    int status = posix_spawn(&pid, argv[0], &action, &spawnattr, argv, env);
-    if (status != 0) {
-        NSLog(@"posix_spawn failed: %s", strerror(status));
+    int status1 = posix_spawn(&pid, argv[0], &action, &spawnattr, argv, env);
+    if (status1 != 0) {
+        NSLog(@"posix_spawn failed: %s", strerror(status1));
     } else {
-        int status = -1;
-        waitpid(pid, &status, 0);
+        int status2 = -1;
+        waitpid(pid, &status2, 0);
     }
 }
 
@@ -424,12 +425,12 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     
     char *env[] = { NULL };
     pid = 0;
-    int status = posix_spawn(&pid, argv[0], &action, &spawnattr, argv, env);
-    if (status != 0) {
-        NSLog(@"posix_spawn failed: %s", strerror(status));
+    int status1 = posix_spawn(&pid, argv[0], &action, &spawnattr, argv, env);
+    if (status1 != 0) {
+        NSLog(@"posix_spawn failed: %s", strerror(status1));
     } else {
-        int status = -1;
-        waitpid(pid, &status, 0);
+        int status2 = -1;
+        waitpid(pid, &status2, 0);
     }
 }
 
@@ -609,6 +610,22 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     [self performSelector:@selector(doTryLogin:) withObject:options afterDelay:10.0];
 }
 
+#ifndef __has_feature
+# define __has_feature(foo) 0
+#endif /* !__has_feature */
+#if defined(__clang__) && __has_feature(objc_arc)
+# define USE_ARC 1
+#else
+# define USE_ARC 0
+#endif
+#if USE_ARC
+/* ok to use __bridge */
+#else
+# ifndef __bridge
+#  define __bridge /* (nothing) */
+# endif /* !__bridge */
+#endif /* USE_ARC or not */
+
 - (void)tryLogin:(NSMutableDictionary*)options
 {
     NSString *domain = [options objectForKey:@"domain"];
@@ -777,7 +794,8 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
             corellium = nil;
             [enumTimer invalidate];
             [self setApiStatus:@""];
-            /*if (usbfluxd_running) {
+#if 0
+            if (usbfluxd_running) {
                 NSDictionary *instances = [self getInstances];
                 for (NSString *key in instances) {
                     NSDictionary *entry = [instances objectForKey:key];
@@ -787,7 +805,8 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
                         [self removeInstance:host port:port];
                     }
                 }
-            }*/
+            }
+#endif /* 0 */
             NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
             [options setObject:domain forKey:@"domain"];
             [options setObject:scheme forKey:@"protocol"];

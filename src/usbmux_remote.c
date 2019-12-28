@@ -33,17 +33,23 @@
 #include <pthread.h>
 
 #ifdef HAVE_CFNETWORK
-#include <CoreFoundation/CoreFoundation.h>
-#include <CFNetwork/CFNetServices.h>
-#endif
+# include <CoreFoundation/CoreFoundation.h>
+# ifdef HAVE_CFNETWORK_CFNETSERVICES_H
+#  include <CFNetwork/CFNetServices.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "usbmux_remote.c expects <CFNetwork/CFNetServices.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
+# endif /* HAVE_CFNETWORK_CFNETSERVICES_H */
+#endif /* HAVE_CFNETWORK */
 #ifdef HAVE_AVAHI_CLIENT
-#include <avahi-client/client.h>
-#include <avahi-client/lookup.h>
-#include <avahi-common/simple-watch.h>
-#include <avahi-common/malloc.h>
-#include <avahi-common/error.h>
-#include <assert.h>
-#endif
+# include <avahi-client/client.h>
+# include <avahi-client/lookup.h>
+# include <avahi-common/simple-watch.h>
+# include <avahi-common/malloc.h>
+# include <avahi-common/error.h>
+# include <assert.h>
+#endif /* HAVE_AVAHI_CLIENT */
 
 #include "usbmux_remote.h"
 #include "utils.h"
@@ -574,17 +580,45 @@ static int remote_mux_service_remove(const char *service_name, const char *host_
 }
 
 #ifdef HAVE_CFNETWORK
+# ifdef HAVE_CFNETWORK_CFNETSERVICES_H
+/* ok */
+# else
+#  ifndef __CFNETSERVICES__
+/* copy and paste the parts of the header we need: */
+typedef struct __CFNetService *CFNetServiceRef;
+enum {
+	kCFNetServiceFlagMoreComing = 1,  
+	kCFNetServiceFlagIsDomain = 2,  
+	kCFNetServiceFlagIsDefault = 4,  
+	kCFNetServiceFlagIsRegistrationDomain = 4,  
+	kCFNetServiceFlagRemove = 8   
+};
+typedef struct __CFNetServiceBrowser* CFNetServiceBrowserRef;
+struct CFNetServiceClientContext {
+	CFIndex	version;
+	void *info;
+	CFAllocatorRetainCallBack retain;
+	CFAllocatorReleaseCallBack release;
+	CFAllocatorCopyDescriptionCallBack copyDescription;
+};
+typedef struct CFNetServiceClientContext CFNetServiceClientContext;
+#  endif /* !__CFNETSERVICES__ */
+# endif /* HAVE_CFNETWORK_CFNETSERVICES_H */
 static CFNetServiceBrowserRef service_browser = NULL;
 static pthread_t th_mdns_mon;
 
 static void service_browse_cb(CFNetServiceBrowserRef browser, CFOptionFlags flags, CFTypeRef domainOrService, CFStreamError *error, void *user_data)
 {
-	//usbfluxd_log(LL_INFO, "%s flags = %d, domainOrService: %p\n", __func__, (int)flags, domainOrService);
+#ifdef DO_EXTRA_USBFLUXD_LOGGING
+	usbfluxd_log(LL_INFO, "%s flags = %d, domainOrService: %p\n", __func__, (int)flags, domainOrService);
+#endif /* DO_EXTRA_USBFLUXD_LOGGING */
 	if (!domainOrService) {
 		return;
 	}
 	if (error && error->error != 0) {
-		//usbfluxd_log(LL_ERROR, "%s: Error %lx/%x\n", __func__, error->domain, error->error);
+#ifdef DO_EXTRA_USBFLUXD_LOGGING
+		usbfluxd_log(LL_ERROR, "%s: Error %lx/%x\n", __func__, error->domain, error->error);
+#endif /* DO_EXTRA_USBFLUXD_LOGGING */
 		return;
 	}
 
@@ -592,7 +626,9 @@ static void service_browse_cb(CFNetServiceBrowserRef browser, CFOptionFlags flag
 		// more records
 	}
 	if (flags & kCFNetServiceFlagIsDomain) {
-		//printf("domain!?\n");
+#if 0
+		printf("domain!?\n");
+#endif /* 0 */
 	} else if (CFGetTypeID(domainOrService) == CFNetServiceGetTypeID()) {
 		CFNetServiceRef service = (CFNetServiceRef)domainOrService;
 		if (flags & kCFNetServiceFlagRemove) {
@@ -650,7 +686,8 @@ static void service_browse_cb(CFNetServiceBrowserRef browser, CFOptionFlags flag
 		}
 	}
 }
-#endif
+#endif /* HAVE_CFNETWORK */
+
 #ifdef HAVE_AVAHI_CLIENT
 static AvahiSimplePoll *simple_poll = NULL;
 static pthread_t th_mdns_mon;
@@ -715,7 +752,7 @@ static void client_cb(AvahiClient *c, AvahiClientState state, AVAHI_GCC_UNUSED v
 		avahi_simple_poll_quit(simple_poll);
 	}
 }
-#endif
+#endif /* HAVE_AVAHI_CLIENT */
 
 static void *mdns_monitor_thread(void *user_data)
 {
@@ -733,7 +770,7 @@ static void *mdns_monitor_thread(void *user_data)
 		goto monitor_thread_cleanup;
 	}
 	CFNetServiceBrowserInvalidate(browser);	
-#endif
+#endif /* HAVE_CFNETWORK */
 #ifdef HAVE_AVAHI_CLIENT
 	AvahiClient *client = NULL;
 	AvahiServiceBrowser *sb = NULL;
@@ -757,14 +794,14 @@ static void *mdns_monitor_thread(void *user_data)
 	}
 
 	avahi_simple_poll_loop(simple_poll);
-#endif
+#endif /* HAVE_AVAHI_CLIENT */
 
 monitor_thread_cleanup:
 #ifdef HAVE_CFNETWORK
 	if (browser)
 		CFRelease(browser);
 	service_browser = NULL;
-#endif
+#endif /* HAVE_CFNETWORK */
 #ifdef HAVE_AVAHI_CLIENT
 	if (sb)
 		avahi_service_browser_free(sb);
@@ -773,7 +810,7 @@ monitor_thread_cleanup:
 	if (simple_poll)
 		avahi_simple_poll_free(simple_poll);
 	simple_poll = NULL;
-#endif
+#endif /* HAVE_AVAHI_CLIENT */
 	return NULL;
 }
 
@@ -833,13 +870,13 @@ void usbmux_remote_shutdown(void)
 		CFStreamError err;
 		CFNetServiceBrowserStopSearch(service_browser, &err);
 		pthread_join(th_mdns_mon, NULL);
-#endif
+#endif /* HAVE_CFNETWORK */
 #ifdef HAVE_AVAHI_CLIENT
 		if (simple_poll) {
 			avahi_simple_poll_quit(simple_poll);
 		}
 		pthread_join(th_mdns_mon, NULL);
-#endif
+#endif /* HAVE_AVAHI_CLIENT */
 	}
 	pthread_mutex_lock(&remote_list_mutex);
 	FOREACH(struct remote_mux *remote, &remote_list) {
@@ -861,7 +898,7 @@ static void remote_close(struct remote_mux *remote)
 		client->state = CLIENT_DEAD;
 		device_abort_connect(client->connect_device, client);
 	}
-#endif
+#endif /* 0 */
 	close(remote->fd);
 
 	collection_remove(&remote_list, remote);
@@ -1080,7 +1117,9 @@ static int remote_handle_command_result(struct remote_mux *remote, struct usbmux
 
 	if ((hdr->version != 0) && (hdr->version != 1)) {
 		usbfluxd_log(LL_INFO, "remote %d version mismatch: expected 0 or 1, got %d", remote->fd, hdr->version);
-		//send_result(client, hdr->tag, RESULT_BADVERSION);
+#if 0
+		send_result(client, hdr->tag, RESULT_BADVERSION);
+#endif /* 0 */
 		return 0;
 	}
 
@@ -1314,14 +1353,20 @@ void usbmux_remote_process(int fd, short events)
 				remote->last_active = mstime64();
 				usbfluxd_log(LL_DEBUG, "%s: read %d bytes from remote (fd %d) requested %u", __func__, r, remote->fd, remote->ib_capacity - remote->ib_size);
 				remote->ib_size += r;
-				//client_set_events(remote->client, POLLOUT); //client->events |= POLLOUT;
+#if 0
+				client_set_events(remote->client, POLLOUT);
+				client->events |= POLLOUT;
+#endif /* 0 */
 				client_or_events(remote->client, POLLOUT);
 			}
 		} else if (events & POLLOUT) {
 			// write to remote
 			usbfluxd_log(LL_DEBUG, "%s: sending %d bytes to remote (fd %d)", __func__, remote->ob_size, fd);
 			remote_process_send(remote);
-			//client_set_events(remote->client, POLLIN); //client->events |= POLLIN;
+#if 0
+			client_set_events(remote->client, POLLIN);
+			client->events |= POLLIN;
+#endif /* 0 */
 			client_or_events(remote->client, POLLIN);
 		} else {
 			usbfluxd_log(LL_DEBUG, "%s: called but no incoming or outgoing traffic.", __func__);

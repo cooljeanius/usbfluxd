@@ -41,33 +41,35 @@ typedef NS_ENUM(NSUInteger, STHTTPRequestCookiesStorage) {
 @property (copy) completionDataBlock_t completionDataBlock;
 
 // request
-@property (nonatomic, strong) NSString *HTTPMethod; // default: GET, overridden by POST if POSTDictionary or files to upload
-@property (nonatomic, strong) NSMutableDictionary *requestHeaders;
-@property (nonatomic, strong) NSDictionary *POSTDictionary; // keys and values are NSString instances
-@property (nonatomic, strong) NSDictionary *GETDictionary; // appended to the URL string
-@property (nonatomic, strong) NSData *rawPOSTData; // eg. to post JSON contents
+@property (nonatomic, assign) __strong NSString *HTTPMethod; // default: GET, overridden by POST if POSTDictionary or files to upload
+@property (nonatomic, assign) __strong NSMutableDictionary *requestHeaders;
+@property (nonatomic, assign) __strong NSDictionary *POSTDictionary; // keys and values are NSString instances
+@property (nonatomic, assign) __strong NSDictionary *GETDictionary; // appended to the URL string
+@property (nonatomic, assign) __strong NSData *rawPOSTData; // eg. to post JSON contents
 @property (nonatomic) NSStringEncoding POSTDataEncoding;
 @property (nonatomic) NSTimeInterval timeoutSeconds; // ignored if 0
 @property (nonatomic) BOOL addCredentialsToURL; // default NO
 @property (nonatomic) BOOL encodePOSTDictionary; // default YES
 @property (nonatomic) BOOL encodeGETDictionary; // default YES, set to NO if the parameters are already URL encoded
-@property (nonatomic, strong, readonly) NSURL *url;
+@property (nonatomic, assign, readonly) __strong NSURL *url;
 @property (nonatomic) BOOL preventRedirections;
 @property (nonatomic) BOOL useUploadTaskInBackground;
 @property (nonatomic) STHTTPRequestCookiesStorage cookieStoragePolicyForInstance; // overrides globalCookiesStoragePolicy
-@property (nonatomic) NSString *sharedContainerIdentifier;
+@property (nonatomic, assign) NSString *sharedContainerIdentifier;
 
 + (void)setBackgroundCompletionHandler:(void(^)(void))completionHandler forSessionIdentifier:(NSString *)sessionIdentifier;
-//+ (void(^)())backgroundCompletionHandlerForSessionIdentifier:(NSString *)sessionIdentifier;
+#if 0
++ (void(^)())backgroundCompletionHandlerForSessionIdentifier:(NSString *)sessionIdentifier;
+#endif /* 0 */
 
 // response
 @property (nonatomic) NSStringEncoding forcedResponseEncoding;
 @property (nonatomic, readonly) NSInteger responseStatus;
-@property (nonatomic, strong, readonly) NSString *responseStringEncodingName;
-@property (nonatomic, strong, readonly) NSDictionary *responseHeaders;
-@property (nonatomic, strong) NSString *responseString;
-@property (nonatomic, strong, readonly) NSMutableData *responseData;
-@property (nonatomic, strong, readonly) NSError *error;
+@property (nonatomic, assign, readonly) __strong NSString *responseStringEncodingName;
+@property (nonatomic, assign, readonly) __strong NSDictionary *responseHeaders;
+@property (nonatomic, assign) __strong NSString *responseString;
+@property (nonatomic, assign, readonly) __strong NSMutableData *responseData;
+@property (nonatomic, assign, readonly) __strong NSError *error;
 @property (nonatomic) long long responseExpectedContentLength; // set by connection:didReceiveResponse: delegate method; web server must send the Content-Length header for accurate value
 
 // cache
