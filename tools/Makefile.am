@@ -7,3 +7,6 @@ usbfluxctl_SOURCES = usbfluxctl.c
 usbfluxctl_CFLAGS = $(AM_CFLAGS)
 usbfluxctl_LDFLAGS = $(AM_LDFLAGS)
 
+distclean-local:
+	-rm -rfv *.dSYM || rmdir *.dSYM
+	-rm -rfv .deps || rmdir .deps

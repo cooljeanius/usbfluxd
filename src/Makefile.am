@@ -14,3 +14,6 @@ usbfluxd_SOURCES = client.c client.h \
 		log.c log.h \
 		utils.c utils.h \
 		main.c
+
+distclean-local:
+	-rm -rfv .deps || rmdir .deps

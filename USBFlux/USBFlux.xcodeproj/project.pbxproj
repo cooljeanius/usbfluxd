@@ -43,6 +43,19 @@
 		04D7270E215C13E800B29E2E /* PasswordEntry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PasswordEntry.m; sourceTree = "<group>"; };
 		04D72715215C53DB00B29E2E /* SimpleTextInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SimpleTextInput.h; sourceTree = "<group>"; };
 		04D72716215C53DB00B29E2E /* SimpleTextInput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SimpleTextInput.m; sourceTree = "<group>"; };
+		A573E1E523B7EC3A0038EE5C /* client.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = client.c; sourceTree = "<group>"; };
+		A573E1E623B7EC3A0038EE5C /* client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = client.h; sourceTree = "<group>"; };
+		A573E1E723B7EC3A0038EE5C /* log.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = log.c; sourceTree = "<group>"; };
+		A573E1E823B7EC3A0038EE5C /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
+		A573E1E923B7EC3A0038EE5C /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		A573E1EC23B7EC3A0038EE5C /* socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = socket.c; sourceTree = "<group>"; };
+		A573E1ED23B7EC3A0038EE5C /* socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = socket.h; sourceTree = "<group>"; };
+		A573E1EE23B7EC3A0038EE5C /* usbmux_remote.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = usbmux_remote.c; sourceTree = "<group>"; };
+		A573E1EF23B7EC3A0038EE5C /* usbmux_remote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = usbmux_remote.h; sourceTree = "<group>"; };
+		A573E1F023B7EC3A0038EE5C /* usbmuxd-proto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "usbmuxd-proto.h"; sourceTree = "<group>"; };
+		A573E1F123B7EC3A0038EE5C /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utils.c; sourceTree = "<group>"; };
+		A573E1F223B7EC3A0038EE5C /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		A573E1F623B7EC3A0038EE5C /* usbfluxctl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = usbfluxctl.c; sourceTree = "<group>"; };
 		DB0E4FB9223588E0003C07CF /* STHTTPRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STHTTPRequest.m; sourceTree = "<group>"; };
 		DB0E4FBA223588E0003C07CF /* STHTTPRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STHTTPRequest.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,6 +76,8 @@
 			children = (
 				047357A320DB2A9F0089445A /* terminate.sh */,
 				0430E95320C02E5B0047F28C /* usbfluxd */,
+				A573E1E423B7EC3A0038EE5C /* src */,
+				A573E1F323B7EC3A0038EE5C /* tools */,
 				0430E93420BEF9F00047F28C /* USBFlux */,
 				0430E93320BEF9F00047F28C /* Products */,
 			);
@@ -99,6 +114,35 @@
 			path = USBFlux;
 			sourceTree = "<group>";
 		};
+		A573E1E423B7EC3A0038EE5C /* src */ = {
+			isa = PBXGroup;
+			children = (
+				A573E1E523B7EC3A0038EE5C /* client.c */,
+				A573E1E623B7EC3A0038EE5C /* client.h */,
+				A573E1E723B7EC3A0038EE5C /* log.c */,
+				A573E1E823B7EC3A0038EE5C /* log.h */,
+				A573E1E923B7EC3A0038EE5C /* main.c */,
+				A573E1EC23B7EC3A0038EE5C /* socket.c */,
+				A573E1ED23B7EC3A0038EE5C /* socket.h */,
+				A573E1EE23B7EC3A0038EE5C /* usbmux_remote.c */,
+				A573E1EF23B7EC3A0038EE5C /* usbmux_remote.h */,
+				A573E1F023B7EC3A0038EE5C /* usbmuxd-proto.h */,
+				A573E1F123B7EC3A0038EE5C /* utils.c */,
+				A573E1F223B7EC3A0038EE5C /* utils.h */,
+			);
+			name = src;
+			path = ../src;
+			sourceTree = SOURCE_ROOT;
+		};
+		A573E1F323B7EC3A0038EE5C /* tools */ = {
+			isa = PBXGroup;
+			children = (
+				A573E1F623B7EC3A0038EE5C /* usbfluxctl.c */,
+			);
+			name = tools;
+			path = ../tools;
+			sourceTree = SOURCE_ROOT;
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -115,6 +159,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
+
+/* Begin PBXLegacyTarget section */
+		A573E1DE23B7EADC0038EE5C /* usbfluxd */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = A573E1E323B7EAFB0038EE5C /* Build configuration list for PBXLegacyTarget "usbfluxd" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			dependencies = (
+			);
+			name = usbfluxd;
+			passBuildSettingsInEnvironment = 1;
+			productName = usbfluxd;
+		};
+/* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
 		0430E93120BEF9F00047F28C /* USBFlux */ = {
@@ -168,6 +228,7 @@
 			projectRoot = "";
 			targets = (
 				0430E93120BEF9F00047F28C /* USBFlux */,
+				A573E1DE23B7EADC0038EE5C /* usbfluxd */,
 			);
 		};
 /* End PBXProject section */
@@ -387,6 +448,27 @@
 			};
 			name = Release;
 		};
+		A573E1DF23B7EADC0038EE5C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = usbfluxd;
+			};
+			name = Debug;
+		};
+		A573E1E023B7EADC0038EE5C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = usbfluxd;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -404,6 +486,15 @@
 			buildConfigurations = (
 				0430E94420BEF9F10047F28C /* Debug */,
 				0430E94520BEF9F10047F28C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A573E1E323B7EAFB0038EE5C /* Build configuration list for PBXLegacyTarget "usbfluxd" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A573E1DF23B7EADC0038EE5C /* Debug */,
+				A573E1E023B7EADC0038EE5C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

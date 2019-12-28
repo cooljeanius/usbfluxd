@@ -4,3 +4,4 @@ SUBDIRS = src tools
 
 EXTRA_DIST = COPYING.GPLv2 COPYING.GPLv3
 
+DISTCLEANFILES = *~ m4/*~ autoscan*.log

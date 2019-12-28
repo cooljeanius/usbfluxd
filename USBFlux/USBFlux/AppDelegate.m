@@ -46,12 +46,17 @@ static AuthorizationRef authorization = nil;
 @property (assign) __weak IBOutlet NSButton *cbAutoStart;
 @end
 
+#ifdef NEED_TO_PACK
+# define ATTRIBUTE_PACKED __attribute__((__packed__))
+#else
+# define ATTRIBUTE_PACKED /* (nothing) */
+#endif /* NEED_TO_PACK */
 struct usbmuxd_header {
     uint32_t length;    // length of message, including header
     uint32_t version;   // protocol version
     uint32_t message;   // message type
-    uint32_t tag;       // responses to this query will echo back this tag
-} __attribute__((__packed__));
+    uint32_t tag;       // responses to this query will echo back this 
+} ATTRIBUTE_PACKED;
 
 static int socket_connect_unix(const char *filename)
 {
@@ -187,7 +192,10 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     muxhdr.tag = 0;
     
     if (send(sfd, &muxhdr, sizeof(struct usbmuxd_header), 0) == sizeof(struct usbmuxd_header)) {
-        if (send(sfd, req_xml, req_len, 0) == req_len) {
+		ssize_t result_of_send = send(sfd, req_xml, req_len, 0);
+		if (result_of_send == -1) {
+			NSLog(@"send() failed: %s (errno: %d)", strerror(errno), errno);
+        } else if ((result_of_send > 0) && ((uint32_t)result_of_send == req_len)) {
             if (recv(sfd, &muxhdr, sizeof(struct usbmuxd_header), 0) == sizeof(struct usbmuxd_header)) {
                 if ((muxhdr.version == 1) && (muxhdr.message == 8) && (muxhdr.tag == 0)) {
                     char *p = &buf[0];
@@ -233,7 +241,7 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     OSStatus status = AuthorizationCreate(NULL, kAuthorizationEmptyEnvironment,
                                           kAuthorizationFlagDefaults, &authorizationRef);
     if (status != errAuthorizationSuccess) {
-        NSLog(@"%s: AuthorizationCreate failed: %d", __func__, status);
+        NSLog(@"%s: AuthorizationCreate failed: %ld", __func__, status);
         return nil;
     }
     
@@ -250,7 +258,7 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     
     status = AuthorizationCopyRights(authorizationRef, &rights, &environment, flags, NULL);
     if (status != errAuthorizationSuccess) {
-        NSLog(@"%s: AuthorizationCopyRights failed: %d", __func__, status);
+        NSLog(@"%s: AuthorizationCopyRights failed: %ld", __func__, status);
         AuthorizationFree(authorizationRef, kAuthorizationFlagDestroyRights);
         return nil;
     }
@@ -270,7 +278,7 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     FILE *fpipe = NULL;
     OSStatus status = AuthorizationExecuteWithPrivileges(auth, cmd, kAuthorizationFlagDefaults, args, &fpipe);
     if (status != errAuthorizationSuccess) {
-        NSLog(@"Failed to execute %s: %d", cmd, status);
+        NSLog(@"Failed to execute %s: %ld", cmd, status);
     } else {
         int stat_loc;
         wait(&stat_loc);
@@ -284,11 +292,11 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
 {
     const char *command1 = "/usr/sbin/chown";
     char *args1[] = { "0:0", usbfluxd_path, terminate_path, NULL };
-    [self runCommandWithAuth:authorization command:command1 arguments:args1];
+    [self runCommandWithAuth:authorization command:(char *)command1 arguments:args1];
 
-    char *command2 = "/bin/chmod";
+    const char *command2 = "/bin/chmod";
     char *args2[] = { "4755", usbfluxd_path, terminate_path, NULL };
-    [self runCommandWithAuth:authorization command:command2 arguments:args2];
+    [self runCommandWithAuth:authorization command:(char *)command2 arguments:args2];
 }
 
 - (BOOL)checkUSBFluxDaemonPermissions

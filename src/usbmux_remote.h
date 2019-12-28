@@ -81,6 +81,8 @@ void usbmux_remote_dispose(struct remote_mux *remote);
 
 void usbmux_remote_notify_client_close(struct remote_mux *remote);
 
+void *check_remote_func(void *data);
+
 void usbmux_remote_get_fds(struct fdlist *list);
 
 void usbmux_remote_process(int fd, short events);

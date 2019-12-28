@@ -584,7 +584,9 @@ static int remote_mux_service_remove(const char *service_name, const char *host_
 /* ok */
 # else
 #  ifndef __CFNETSERVICES__
-/* copy and paste the parts of the header we need: */
+/* copy and paste the parts of the header we need, because this is easier than
+ * teaching the build system about sysroots and sdkroots and stuff, in order
+ * to find the include dirs necessary: */
 typedef struct __CFNetService *CFNetServiceRef;
 enum {
 	kCFNetServiceFlagMoreComing = 1,  
@@ -602,6 +604,39 @@ struct CFNetServiceClientContext {
 	CFAllocatorCopyDescriptionCallBack copyDescription;
 };
 typedef struct CFNetServiceClientContext CFNetServiceClientContext;
+typedef CALLBACK_API_C(void, CFNetServiceBrowserClientCallBack)(CFNetServiceBrowserRef browser, CFOptionFlags flags, CFTypeRef domainOrService, CFStreamError *error, void *info);
+#  ifndef CFN_EXPORT
+#   ifdef CF_EXPORT
+#    define CFN_EXPORT CF_EXPORT
+#   else
+#    if defined(__WIN32__)
+#     if defined(CFNETWORK_BUILDING_DLL)
+#      define CFN_EXPORT __declspec(dllexport) extern
+#     else
+#      define CFN_EXPORT __declspec(dllimport) extern
+#     endif /* CFNETWORK_BUILDING_DLL */
+#    else
+#     define CFN_EXPORT extern
+#    endif /* __WIN32__ */
+#   endif /* CF_EXPORT */
+#  endif /* CFN_EXPORT */
+CFN_EXPORT CFTypeID CFNetServiceGetTypeID(void) __OSX_AVAILABLE_STARTING(__MAC_10_2,__IPHONE_2_0);
+CFN_EXPORT CFStringRef CFNetServiceGetName(CFNetServiceRef theService) __OSX_AVAILABLE_STARTING(__MAC_10_2,__IPHONE_2_0);
+CFN_EXPORT Boolean CFNetServiceResolveWithTimeout(CFNetServiceRef theService,
+												  CFTimeInterval timeout,
+												  CFStreamError *error) __OSX_AVAILABLE_STARTING(__MAC_10_4,__IPHONE_2_0);
+CFN_EXPORT SInt32 CFNetServiceGetPortNumber(CFNetServiceRef theService) __OSX_AVAILABLE_STARTING(__MAC_10_5,__IPHONE_2_0);
+CFN_EXPORT CFStringRef CFNetServiceGetTargetHost(CFNetServiceRef theService) __OSX_AVAILABLE_STARTING(__MAC_10_4,__IPHONE_2_0);
+CFN_EXPORT CFNetServiceBrowserRef CFNetServiceBrowserCreate(CFAllocatorRef alloc,
+															CFNetServiceBrowserClientCallBack clientCB,
+															CFNetServiceClientContext *clientContext) __OSX_AVAILABLE_STARTING(__MAC_10_2,__IPHONE_2_0);
+CFN_EXPORT Boolean CFNetServiceBrowserSearchForServices(CFNetServiceBrowserRef browser,
+														CFStringRef domain,
+														CFStringRef	serviceType,
+														CFStreamError *error) __OSX_AVAILABLE_STARTING(__MAC_10_2,__IPHONE_2_0);
+CFN_EXPORT void CFNetServiceBrowserInvalidate(CFNetServiceBrowserRef browser) __OSX_AVAILABLE_STARTING(__MAC_10_2,__IPHONE_2_0);
+CFN_EXPORT void CFNetServiceBrowserStopSearch(CFNetServiceBrowserRef browser,
+											  CFStreamError *error) __OSX_AVAILABLE_STARTING(__MAC_10_2,__IPHONE_2_0);
 #  endif /* !__CFNETSERVICES__ */
 # endif /* HAVE_CFNETWORK_CFNETSERVICES_H */
 static CFNetServiceBrowserRef service_browser = NULL;
@@ -624,6 +659,11 @@ static void service_browse_cb(CFNetServiceBrowserRef browser, CFOptionFlags flag
 
 	if (flags & kCFNetServiceFlagMoreComing) {
 		// more records
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+		__asm__("");
+#elif 0
+		printf("more records\n");
+#endif /* (__GNUC__ && !__STRICT_ANSI__) || 0 */
 	}
 	if (flags & kCFNetServiceFlagIsDomain) {
 #if 0
@@ -974,7 +1014,7 @@ void usbmux_remote_notify_client_close(struct remote_mux *remote)
 	pthread_mutex_unlock(&remote_list_mutex);
 }
 
-void *check_remote_func(void* data)
+void *check_remote_func(void *data)
 {
 	struct remote_mux *remote = (struct remote_mux*)data;
 	struct timeval timeout = { 2, 0 };
