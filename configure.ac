@@ -33,6 +33,8 @@ AC_CHECK_LIB([pthread],[pthread_create, pthread_mutex_lock],
              [AC_SUBST([libpthread_LIBS],[-lpthread])],
              [AC_MSG_ERROR([libpthread is required to build usbfluxd])])dnl
 
+AC_SEARCH_LIBS([fmin], [m])
+
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_HEADER_STDC])dnl
