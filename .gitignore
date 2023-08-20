@@ -49,3 +49,7 @@ USBFlux/USBFlux.xcodeproj/*.perspectivev3
 create-dmg
 .DS_Store
 *.dSYM
+confdefs.h
+conftest.c
+conftest.err
+conftest.sym

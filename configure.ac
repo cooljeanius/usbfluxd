@@ -11,6 +11,7 @@ AC_CONFIG_MACRO_DIR([m4])dnl
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_CPP
 AC_PROG_CXX
 AM_PROG_CC_C_O
 AC_PROG_OBJC
@@ -22,6 +23,7 @@ AC_DEFUN([AC_REQUIRE_PROGS],[
   AC_REQUIRE([AC_PROG_MAKE_SET])dnl
   AC_REQUIRE([AC_PROG_RANLIB])dnl
   AC_REQUIRE([AC_PROG_SED])dnl
+  AC_REQUIRE([AC_PROG_EGREP])dnl
 ])dnl
 AC_REQUIRE_PROGS
 
@@ -34,6 +36,7 @@ AC_CHECK_LIB([pthread],[pthread_create, pthread_mutex_lock],
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_HEADER_STDC])dnl
+  AC_REQUIRE([AC_CHECK_INCLUDES_DEFAULT])dnl
 ])dnl
 AC_REQUIRE_HEADER_STDC
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
@@ -41,6 +44,15 @@ AC_HEADER_TIME
 AC_CHECK_HEADERS([CFNetwork/CFNetServices.h])
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h sys/statvfs.h \
                   sys/time.h syslog.h])dnl
+
+if test "x${ac_cv_header_stdint_h}" = "x"; then
+  test -z "${ac_cv_header_stdint_h}"
+  AC_CHECK_HEADERS([stdint.h])
+fi
+if test "x${ac_cv_header_unistd_h}" = "x"; then
+  test -z "${ac_cv_header_unistd_h}"
+  AC_CHECK_HEADERS([unistd.h])
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
