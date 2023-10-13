@@ -53,6 +53,7 @@ create-dmg
 *.dSYM
 confdefs.h
 conftest.c
+conftest.dir/*
 conftest.err
 conftest.sym
 *.tar.bz2

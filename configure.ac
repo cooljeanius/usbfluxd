@@ -153,10 +153,10 @@ if test "x${with_static_libplist}" != "xno"; then
         test -n "${LIBPLIST_PKG_CONFIG_LIBDIR}" && echo "pkg-config says: ${LIBPLIST_PKG_CONFIG_LIBDIR}"
       else
         echo "outputting some attempts at debugging the relevant pkg-config file"
-        pkg-config --debug --libs-only-L ${LIBPLIST}
-        pkg-config --print-variables ${LIBPLIST}
-        pkg-config --print-errors ${LIBPLIST}
-        pkg-config --debug --validate ${LIBPLIST}
+        echo "'pkg-config --debug --libs-only-L ${LIBPLIST}' says:" && pkg-config --debug --libs-only-L ${LIBPLIST}
+        echo "'pkg-config --print-variables ${LIBPLIST}' says:" && pkg-config --print-variables ${LIBPLIST}
+        echo "'pkg-config --print-errors ${LIBPLIST}' says:" && pkg-config --print-errors ${LIBPLIST}
+        echo "'pkg-config --debug --validate ${LIBPLIST}' says:" && pkg-config --debug --validate ${LIBPLIST}
         PKG_CONFIG_LIBDIR_LIBPLIST="`pkg-config --variable=libdir ${LIBPLIST}`"
         if test "x${PKG_CONFIG_LIBDIR_LIBPLIST}" != "x"; then
           test -n "${PKG_CONFIG_LIBDIR_LIBPLIST}" && echo "trying to use ${PKG_CONFIG_LIBDIR_LIBPLIST} as the relevant libdir here..."
@@ -166,6 +166,9 @@ if test "x${with_static_libplist}" != "xno"; then
         fi
       fi
       STATIC_LIBPLIST="`echo ${LIBPLIST_PKG_CONFIG_LIBDIR} | sed "s/^..//; s/[ ]*$/\/${LIBPLIST}.a/"`"
+      if test ! -e "${STATIC_LIBPLIST}"; then
+        STATIC_LIBPLIST="${LIBPLIST_PKG_CONFIG_LIBDIR}/${LIBPLIST}.a"
+      fi
       test -n "${STATIC_LIBPLIST}" && echo "STATIC_LIBPLIST is now ${STATIC_LIBPLIST}"
     else
       STATIC_LIBPLIST="`pkg-config --libs-only-L libplist | sed "s/^..//; s/[ ]*$/\/libplist.a/"`"
