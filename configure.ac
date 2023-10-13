@@ -143,6 +143,7 @@ AC_ARG_WITH([static-libplist],
                             [link against a static libplist])],
             [with_static_libplist=${withval}],
             [with_static_libplist=yes])
+echo "with_static_libplist is ${with_static_libplist}"
 if test "x${with_static_libplist}" != "xno"; then
   if test "x${with_static_libplist}" = "xyes"; then
     if test "x${LIBPLIST}" != "x"; then
@@ -156,8 +157,16 @@ if test "x${with_static_libplist}" != "xno"; then
         pkg-config --print-variables ${LIBPLIST}
         pkg-config --print-errors ${LIBPLIST}
         pkg-config --debug --validate ${LIBPLIST}
+        PKG_CONFIG_LIBDIR_LIBPLIST="`pkg-config --variable=libdir ${LIBPLIST}`"
+        if test "x${PKG_CONFIG_LIBDIR_LIBPLIST}" != "x"; then
+          test -n "${PKG_CONFIG_LIBDIR_LIBPLIST}" && echo "trying to use ${PKG_CONFIG_LIBDIR_LIBPLIST} as the relevant libdir here..."
+          test -z "${LIBPLIST_PKG_CONFIG_LIBDIR}" && export LIBPLIST_PKG_CONFIG_LIBDIR="${PKG_CONFIG_LIBDIR_LIBPLIST}"
+        else
+          test -z "${PKG_CONFIG_LIBDIR_LIBPLIST}" && echo "bad news: PKG_CONFIG_LIBDIR_LIBPLIST is empty!"
+        fi
       fi
-      STATIC_LIBPLIST="`pkg-config --libs-only-L ${LIBPLIST} | sed "s/^..//; s/[ ]*$/\/${LIBPLIST}.a/"`"
+      STATIC_LIBPLIST="`echo ${LIBPLIST_PKG_CONFIG_LIBDIR} | sed "s/^..//; s/[ ]*$/\/${LIBPLIST}.a/"`"
+      test -n "${STATIC_LIBPLIST}" && echo "STATIC_LIBPLIST is now ${STATIC_LIBPLIST}"
     else
       STATIC_LIBPLIST="`pkg-config --libs-only-L libplist | sed "s/^..//; s/[ ]*$/\/libplist.a/"`"
     fi
@@ -182,6 +191,8 @@ if test "x${with_static_libplist}" != "xno"; then
   fi
   echo "*** Note: Will link with static libplist found at ${STATIC_LIBPLIST} ***"
   AC_SUBST([libplist_LIBS],[${STATIC_LIBPLIST}])
+else
+  echo "*** Note: Skipping checks about linking with static libplist ***"
 fi
 
 if test "x${ac_cv_header_sys_socket_h}" = "x"; then
