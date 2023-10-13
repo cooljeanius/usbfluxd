@@ -10,3 +10,6 @@ usbfluxctl_LDFLAGS = $(AM_LDFLAGS)
 distclean-local:
 	-rm -rfv *.dSYM || rmdir *.dSYM
 	-rm -rfv .deps || rmdir .deps
+
+check-local: $(bin_PROGRAMS)
+	if test -x usbfluxctl; then echo "ok"; fi

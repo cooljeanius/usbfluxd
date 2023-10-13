@@ -26,6 +26,7 @@ AC_DEFUN([AC_REQUIRE_PROGS],[
   AC_REQUIRE([AC_PROG_EGREP])dnl
 ])dnl
 AC_REQUIRE_PROGS
+AC_PATH_PROG([SHELLCHECK],[shellcheck],[shellcheck])dnl
 
 # Checks for libraries.
 PKG_CHECK_MODULES([libplist],[libplist >= 2.2.0],
