@@ -9,15 +9,32 @@ AC_CONFIG_SRCDIR([usbfluxd/])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])dnl
 
+AC_USE_SYSTEM_EXTENSIONS
+
 # Checks for programs.
-AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_CXX
-AM_PROG_CC_C_O
-AC_PROG_OBJC
+if test "x${CXX}" = "x" && test "x${ac_cv_prog_CXXCPP}" = "x" && \
+   test "x${CXXCPP}" = "x" && test "x${ac_cv_prog_cxx_g}" = "x" && \
+   test "x${ac_cv_cxx_compiler_gnu}" = "x" && \
+   test "x${ac_cv_prog_ac_ct_CXX}" = "x" && \
+   test "x${am_cv_CXX_dependencies_compiler_type}" = "x"; then
+  if test -x "`which autoscan`" && test "x${BE_NOISY}" = "xVERY"; then
+    test -z "${CXX}" && echo "CXX is unset"
+    test -z "${ac_cv_prog_CXXCPP}" && echo "ac_cv_prog_CXXCPP is unset"
+    test -z "${CXXCPP}" && echo "CXXCPP is unset"
+    test -z "${ac_cv_prog_cxx_g}" && echo "ac_cv_prog_cxx_g is unset"
+    test -z "${ac_cv_cxx_compiler_gnu}"  && echo "ac_cv_cxx_compiler_gnu is unset"
+    test -z "${ac_cv_prog_ac_ct_CXX}" && echo "ac_cv_prog_ac_ct_CXX is unset"
+    test -z "${am_cv_CXX_dependencies_compiler_type}" && echo "am_cv_CXX_dependencies_compiler_type is unset"
+  fi
+  AC_PROG_CXX
+fi
 LT_INIT([win32-dll])
 LT_LANG([C])
 AC_DEFUN([AC_REQUIRE_PROGS],[
+  AC_REQUIRE([AC_PROG_CC])dnl
+  AC_REQUIRE([AC_PROG_CPP])dnl
+  AC_REQUIRE([AM_PROG_CC_C_O])dnl
+  AC_REQUIRE([AC_PROG_OBJC])dnl
   AC_REQUIRE([AC_PROG_INSTALL])dnl
   AC_REQUIRE([AC_PROG_LN_S])dnl
   AC_REQUIRE([AC_PROG_MAKE_SET])dnl
@@ -53,7 +70,7 @@ AC_CHECK_LIB([pthread],[pthread_create, pthread_mutex_lock],
              [AC_SUBST([libpthread_LIBS],[-lpthread])],
              [AC_MSG_ERROR([libpthread is required to build usbfluxd])])dnl
 
-AC_SEARCH_LIBS([fmin],[m])dnl
+AC_SEARCH_LIBS([fmin],[m crlibm mvec])dnl
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[

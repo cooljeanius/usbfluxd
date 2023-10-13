@@ -68,7 +68,7 @@ jobs:
           brew install make automake autoconf libtool pkg-config gcc libimobiledevice usbmuxd
         elif test -x "$(which apt-get)"; then
           sudo apt-get update
-          sudo apt-get install make automake autoconf libtool pkg-config gcc libimobiledevice6 libplist3 libplist-dev libplist-utils libusbmuxd6 libusbmuxd-tools usbmuxd socat libavahi-client-dev mlocate findutils
+          sudo apt-get install make automake autoconf libtool pkg-config gcc libimobiledevice6 libplist3 libplist-dev libplist-utils libusbmuxd6 libusbmuxd-tools usbmuxd socat libavahi-client-dev shellcheck
         fi
 
     - name: Build

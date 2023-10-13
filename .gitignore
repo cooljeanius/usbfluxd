@@ -52,9 +52,5 @@ create-dmg
 .DS_Store
 *.dSYM
 confdefs.h
-conftest.c
-conftest.dir/*
-conftest.err
-conftest.out
-conftest.sym
+conftest*
 *.tar.bz2
