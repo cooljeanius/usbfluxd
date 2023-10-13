@@ -62,10 +62,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        if test -x "`which brew`"; then
+        if test -x "$(which brew)"; then
           brew install make automake autoconf libtool pkg-config gcc libimobiledevice usbmuxd
-        elif test -x "`which apt-get`"; then
-          apt-get install make automake autoconf libtool pkg-config gcc libimobiledevice usbmuxd
+        elif test -x "$(which apt-get)"; then
+          sudo apt-get install make automake autoconf libtool pkg-config gcc libimobiledevice usbmuxd
         fi
 
     # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
@@ -73,8 +73,8 @@ jobs:
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
 
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
+    # Command-line programs to run using the OS shell.
+    # See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
 
     #   If the Autobuild fails above, remove it and uncomment the following three lines.
     #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
@@ -82,7 +82,7 @@ jobs:
     - run: |
         echo "Run, Build Application using script"
         ls
-        if test -x "`which xcodebuild`"; then cd USBFlux && xcodebuild; fi
+        if test -x "$(which xcodebuild)"; then cd USBFlux && xcodebuild; fi
         sh ./autogen.sh || sh ./build-gui.sh || sh ./makedmg.sh
         make
         make distcheck
