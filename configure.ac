@@ -63,8 +63,8 @@ AC_REQUIRE_HEADER_STDC
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_TIME
 AC_CHECK_HEADERS([CFNetwork/CFNetServices.h])
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h sys/statvfs.h \
-                  sys/time.h syslog.h])dnl
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h mach/mach_time.h netdb.h netinet/in.h \
+                  sys/statvfs.h sys/time.h syslog.h])dnl
 
 if test "x${ac_cv_header_stdint_h}" = "x"; then
   test -z "${ac_cv_header_stdint_h}"
@@ -102,8 +102,8 @@ AC_DEFUN([AC_REQUIRE_FUNCS],[
 ])dnl
 AC_REQUIRE_FUNCS
 AC_CHECK_FUNCS([strcasecmp strdup strerror strndup stpcpy localtime_r])
-AC_CHECK_FUNCS([bzero gethostbyname gettimeofday memmove memset select socket \
-                strchr strrchr strtol strtoul])
+AC_CHECK_FUNCS([bzero client_clear_remote gethostbyname gettimeofday memmove \
+                memset select socket strchr strrchr strtol strtoul])
 AC_CHECK_FUNCS([ppoll clock_gettime])dnl
 
 # Check for operating system

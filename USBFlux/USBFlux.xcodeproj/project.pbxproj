@@ -76,7 +76,7 @@
 			children = (
 				047357A320DB2A9F0089445A /* terminate.sh */,
 				0430E95320C02E5B0047F28C /* usbfluxd */,
-				A573E1E423B7EC3A0038EE5C /* src */,
+				A573E1E423B7EC3A0038EE5C /* usbfluxd */,
 				A573E1F323B7EC3A0038EE5C /* tools */,
 				0430E93420BEF9F00047F28C /* USBFlux */,
 				0430E93320BEF9F00047F28C /* Products */,
@@ -114,7 +114,7 @@
 			path = USBFlux;
 			sourceTree = "<group>";
 		};
-		A573E1E423B7EC3A0038EE5C /* src */ = {
+		A573E1E423B7EC3A0038EE5C /* usbfluxd */ = {
 			isa = PBXGroup;
 			children = (
 				A573E1E523B7EC3A0038EE5C /* client.c */,
@@ -130,8 +130,8 @@
 				A573E1F123B7EC3A0038EE5C /* utils.c */,
 				A573E1F223B7EC3A0038EE5C /* utils.h */,
 			);
-			name = src;
-			path = ../src;
+			name = usbfluxd;
+			path = ../usbfluxd;
 			sourceTree = SOURCE_ROOT;
 		};
 		A573E1F323B7EC3A0038EE5C /* tools */ = {

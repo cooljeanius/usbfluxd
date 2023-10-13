@@ -976,7 +976,7 @@ static int remote_device_notify_remove(const char* key, const plist_t value, voi
 	uint32_t val = strtol(key, NULL, 16);
 	if ((val >> 24) == remote->id) {
 		client_device_remove(val);
-		plist_dict_remove_item(remote_device_list, key); // TODO verify if this is safe
+		plist_dict_remove_item(remote_device_list, key); // TODO: verify if this is safe
 	}
 	return 0;
 }
@@ -990,7 +990,9 @@ void usbmux_remote_dispose(struct remote_mux *remote)
 	plist_dict_foreach(remote_device_list, remote_device_notify_remove, (void*)remote);
 	collection_remove(&remote_list, remote);
 	if (remote->client) {
+#ifdef HAVE_CLIENT_CLEAR_REMOTE
 		client_clear_remote(remote->client);
+#endif /* HAVE_CLIENT_CLEAR_REMOTE */
 		usbfluxd_log(LL_DEBUG, "Remote %p notifying close client %p", remote, remote->client);
 		client_notify_remote_close(remote->client);
 	}

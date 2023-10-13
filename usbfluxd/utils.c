@@ -31,8 +31,8 @@
 #include <time.h>
 #include <sys/time.h>
 #include <errno.h>
-#ifdef __APPLE__
-#include <mach/mach_time.h>
+#if defined(__APPLE__) || defined(HAVE_MACH_MACH_TIME_H)
+# include <mach/mach_time.h>
 #endif
 
 #include "utils.h"
@@ -302,7 +302,7 @@ int plist_read_from_filename(plist_t *plist, const char *filename)
 	return 1;
 }
 
-int plist_write_to_filename(plist_t plist, const char *filename, enum plist_format_t format)
+int plist_write_to_filename(plist_t plist, const char *filename, plist_format_t format)
 {
 	char *buffer = NULL;
 	uint32_t length;
