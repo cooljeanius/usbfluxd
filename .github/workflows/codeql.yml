@@ -80,7 +80,7 @@ jobs:
         echo "Run, Build Application using script"
         ls
         if test -x "$(which xcodebuild)"; then cd USBFlux && xcodebuild; fi
-        sh ./autogen.sh NOCONFIGURE=yes
+        export NOCONFIGURE=yes && sh ./autogen.sh
         ./configure --with-static-libplist=no
         make
         make distcheck

@@ -23,9 +23,9 @@ if [ $? -ne 0 ]; then
   echo "Missing required pkg-config. Please install it on your system and run again."
 fi
 
-if [ -z "$NOCONFIGURE" ]; then
-    echo "Running generated configure script"
+if [ -z "${NOCONFIGURE}" ]; then
+    echo "Running generated configure script..."
     ./configure "$@"
 else
-	echo "NOCONFIGURE set; skipping running configure script"
+    echo "NOCONFIGURE set; skipping running configure script"
 fi
