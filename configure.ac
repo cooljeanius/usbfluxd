@@ -139,7 +139,7 @@ AC_SUBST([AC_LDADD])dnl
 AM_CONDITIONAL([WIN32],[test "x${win32}" = "xtrue"])dnl
 
 AC_ARG_WITH([static-libplist],
-            [AS_HELP_STRING(["--with-static-libplist[=/path/to/static/libplist"]],
+            [AS_HELP_STRING([--with-static-libplist[=/path/to/static/libplist]],
                             [link against a static libplist])],
             [with_static_libplist=${withval}],
             [with_static_libplist=yes])
@@ -147,6 +147,7 @@ if test "x${with_static_libplist}" != "xno"; then
   if test "x${with_static_libplist}" = "xyes"; then
     if test "x${LIBPLIST}" != "x"; then
       test -n "${LIBPLIST}" && echo "seeing if ${LIBPLIST} is available statically"
+      echo "pkg-config says: `pkg-config --libs-only-L ${LIBPLIST}`"
       STATIC_LIBPLIST="`pkg-config --libs-only-L ${LIBPLIST} | sed "s/^..//; s/[ ]*$/\/${LIBPLIST}.a/"`"
     else
       STATIC_LIBPLIST="`pkg-config --libs-only-L libplist | sed "s/^..//; s/[ ]*$/\/libplist.a/"`"
