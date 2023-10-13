@@ -90,12 +90,19 @@ jobs:
         if test -r config.log; then cat config.log && wc -l config.log; elif test -e config.log; then stat config.log; else ls -AR; fi
         echo "looking for libplist.a..."
         if test -x "$(which locate)"; then \
-          (locate libplist.a || locate libplist-2.0.a); \
+          echo "attempting to use locate..."; \
+          (locate libplist.a || locate libplist-2.0.a || echo "locate failed!"); \
         elif test -x "$(which mlocate)"; then \
-          (mlocate libplist.a || mlocate libplist-2.0.a); \
+          echo "attempting to use mlocate..."; \
+          (mlocate libplist.a || mlocate libplist-2.0.a || echo "mlocate fail!"); \
         elif test -x "$(which plocate)"; then \
-          (plocate libplist.a || plocate libplist-2.0.a); \
+          echo "attempting to use plocate..."; \
+          (plocate libplist.a || plocate libplist-2.0.a || echo "plocate fail!"); \
+        elif test -x "$(which glocate)"; then \
+          echo "attempting to use glocate..."; \
+          (glocate libplist.a || glocate libplist-2.0.a || echo "glocate fail!"); \
         elif test -x "$(which find)"; then \
+          echo "attempting to use find..."; \
           (find / -name libplist.a || find / -name libplist-2.0.a || echo "not found!"); \
         else \
           echo "unsure how to find a static libplist!"; \
