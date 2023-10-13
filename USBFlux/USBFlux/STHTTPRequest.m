@@ -10,7 +10,12 @@
 # define __has_feature(foo) 0
 #endif /* !__has_feature */
 
+#ifndef __has_extension
+# define __has_extension(foo) __has_feature(foo) // Compat. w/pre-3.0 clangs
+#endif /* !__has_extension */
+
 #if __has_feature(objc_arc)
+/* (ok) */
 #else
 // see http://www.codeography.com/2011/10/10/making-arc-and-non-arc-play-nice.html
 #error This file must be compiled with ARC. Either turn on ARC for the project or use -fobjc-arc flag
@@ -936,15 +941,27 @@ static STHTTPRequestCookiesStorage globalCookiesStoragePolicy = STHTTPRequestCoo
     sessionCompletionHandlersForIdentifier[sessionIdentifier] = [completionHandler copy];
 }
 
-//+ (void(^)())backgroundCompletionHandlerForSessionIdentifier:(NSString *)sessionIdentifier {
-//    return sessionCompletionHandlersForIdentifier[sessionIdentifier];
-//}
+
+#if __has_extension(blocks)
++ (void(^)())backgroundCompletionHandlerForSessionIdentifier:(NSString *)sessionIdentifier {
+    return sessionCompletionHandlersForIdentifier[sessionIdentifier];
+}
+#endif
+
+#ifdef OBJC_WEAK
+# undef OBJC_WEAK
+#endif /* OBJC_WEAK */
+#if __has_feature(objc_arc) && __has_feature(objc_arc_weak)
+# define OBJC_WEAK __weak
+#else
+# define OBJC_WEAK /* (nothing) */
+#endif /* __has_feature(objc_arc) */
 
 #pragma mark NSURLSessionDelegate
 
 - (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error {
     
-    __weak typeof(self) weakSelf = self;
+    OBJC_WEAK typeof(self) weakSelf = self;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -1068,7 +1085,7 @@ willPerformHTTPRedirection:(NSHTTPURLResponse *)response
         newRequest:(NSURLRequest *)request
  completionHandler:(void (^)(NSURLRequest *))completionHandler {
     
-    __weak typeof(self) weakSelf = self;
+    OBJC_WEAK typeof(self) weakSelf = self;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -1084,7 +1101,7 @@ willPerformHTTPRedirection:(NSHTTPURLResponse *)response
     totalBytesSent:(int64_t)totalBytesSent
 totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
     
-    __weak typeof(self) weakSelf = self;
+    OBJC_WEAK typeof(self) weakSelf = self;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -1102,7 +1119,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
               task:(NSURLSessionTask *)task
 didCompleteWithError:(NSError *)error {
     
-    __weak typeof(self) weakSelf = self;
+    OBJC_WEAK typeof(self) weakSelf = self;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -1220,7 +1237,7 @@ didCompleteWithError:(NSError *)error {
 didReceiveResponse:(NSURLResponse *)response
  completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
     
-    __weak typeof(self) weakSelf = self;
+    OBJC_WEAK typeof(self) weakSelf = self;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -1250,7 +1267,7 @@ didReceiveResponse:(NSURLResponse *)response
           dataTask:(NSURLSessionDataTask *)dataTask
     didReceiveData:(NSData *)data {
     
-    __weak typeof(self) weakSelf = self;
+    OBJC_WEAK typeof(self) weakSelf = self;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -1271,7 +1288,7 @@ didReceiveResponse:(NSURLResponse *)response
  willCacheResponse:(NSCachedURLResponse *)proposedResponse
  completionHandler:(void (^)(NSCachedURLResponse *cachedResponse))completionHandler {
     
-    __weak typeof(self) weakSelf = self;
+    OBJC_WEAK typeof(self) weakSelf = self;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         

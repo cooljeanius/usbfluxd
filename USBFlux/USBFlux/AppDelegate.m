@@ -36,14 +36,26 @@ static AuthorizationRef authorization = nil;
     BOOL autostart_after_config;
     BOOL onSite;
 }
-@property (assign) __weak IBOutlet NSMenuItem *preferencesSeparator;
-@property (assign) __weak IBOutlet NSMenuItem *preferencesItem;
-@property (assign) __weak IBOutlet NSTextField *statusLabel;
-@property (assign) __weak IBOutlet NSTextField *detailLabel;
-@property (assign) __weak IBOutlet NSTextField *apiLabel;
-@property (assign) __weak IBOutlet NSWindow *window;
-@property (assign) __weak IBOutlet NSButton *startStopButton;
-@property (assign) __weak IBOutlet NSButton *cbAutoStart;
+#ifndef __has_feature
+# define __has_feature(foo) 0
+#endif /* !__has_feature */
+
+#ifdef OBJC_WEAK
+# undef OBJC_WEAK
+#endif /* OBJC_WEAK */
+#if __has_feature(objc_arc) && __has_feature(objc_arc_weak)
+# define OBJC_WEAK __weak
+#else
+# define OBJC_WEAK /* (nothing) */
+#endif /* __has_feature(objc_arc) */
+@property (assign) OBJC_WEAK IBOutlet NSMenuItem *preferencesSeparator;
+@property (assign) OBJC_WEAK IBOutlet NSMenuItem *preferencesItem;
+@property (assign) OBJC_WEAK IBOutlet NSTextField *statusLabel;
+@property (assign) OBJC_WEAK IBOutlet NSTextField *detailLabel;
+@property (assign) OBJC_WEAK IBOutlet NSTextField *apiLabel;
+@property (assign) OBJC_WEAK IBOutlet NSWindow *window;
+@property (assign) OBJC_WEAK IBOutlet NSButton *startStopButton;
+@property (assign) OBJC_WEAK IBOutlet NSButton *cbAutoStart;
 @end
 
 #ifdef NEED_TO_PACK
