@@ -53,3 +53,4 @@ confdefs.h
 conftest.c
 conftest.err
 conftest.sym
+*.tar.bz2
