@@ -140,9 +140,15 @@ AM_CONDITIONAL([WIN32],[test "x${win32}" = "xtrue"])dnl
 
 AC_ARG_WITH([static-libplist],
             [AS_HELP_STRING([--with-static-libplist[=/path/to/static/libplist]],
-                            [link against a static libplist])],
-            [with_static_libplist=${withval}],
-            [with_static_libplist=yes])
+                            [link against a static libplist])],[
+if test "x${withval}" != "x"; then
+  test -n "${withval}" && echo "using ${withval} as withval"
+  with_static_libplist=${withval}
+else
+  test -z "${withval}" && echo "uh oh... empty withval!"
+  with_static_libplist=no
+fi
+            ],[with_static_libplist=yes])
 echo "with_static_libplist is ${with_static_libplist}"
 if test "x${with_static_libplist}" != "xno"; then
   if test "x${with_static_libplist}" = "xyes"; then
@@ -155,13 +161,15 @@ if test "x${with_static_libplist}" != "xno"; then
         echo "outputting some attempts at debugging the relevant pkg-config file"
         echo "'pkg-config --debug --libs-only-L ${LIBPLIST}' says:" && pkg-config --debug --libs-only-L ${LIBPLIST}
         echo "'pkg-config --print-variables ${LIBPLIST}' says:" && pkg-config --print-variables ${LIBPLIST}
+        m4_pattern_allow([PKG_CONFIG_LIBPLIST_ERRORS])
         PKG_CONFIG_LIBPLIST_ERRORS="`pkg-config --print-errors ${LIBPLIST}`"
         if test "x${PKG_CONFIG_LIBPLIST_ERRORS}" != "x"; then
           test -n "${PKG_CONFIG_LIBPLIST_ERRORS}" && echo "'pkg-config --print-errors ${LIBPLIST}' says: ${PKG_CONFIG_LIBPLIST_ERRORS}"
         else
-          test -z "${PKG_CONFIG_LIBPLIST_ERRORS}" echo "pkg-config has no errors to report for ${LIBPLIST}."
+          test -z "${PKG_CONFIG_LIBPLIST_ERRORS}" && echo "pkg-config has no errors to report for ${LIBPLIST}."
         fi
         echo "'pkg-config --debug --validate ${LIBPLIST}' says:" && pkg-config --debug --validate ${LIBPLIST}
+        m4_pattern_allow([PKG_CONFIG_LIBDIR_LIBPLIST])
         PKG_CONFIG_LIBDIR_LIBPLIST="`pkg-config --variable=libdir ${LIBPLIST}`"
         if test "x${PKG_CONFIG_LIBDIR_LIBPLIST}" != "x"; then
           test -n "${PKG_CONFIG_LIBDIR_LIBPLIST}" && echo "trying to use ${PKG_CONFIG_LIBDIR_LIBPLIST} as the relevant libdir here..."
