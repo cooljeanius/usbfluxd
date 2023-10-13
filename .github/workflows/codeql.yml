@@ -69,7 +69,7 @@ jobs:
           sudo apt-get install make automake autoconf libtool pkg-config gcc libimobiledevice6 libplist3 libplist-dev libusbmuxd6 libusbmuxd-tools usbmuxd socat libavahi-client-dev
         fi
 
-    - name: Autobuild
+    - name: Build
     # Command-line programs to run using the OS shell.
     # See:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun

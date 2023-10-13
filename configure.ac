@@ -147,7 +147,16 @@ if test "x${with_static_libplist}" != "xno"; then
   if test "x${with_static_libplist}" = "xyes"; then
     if test "x${LIBPLIST}" != "x"; then
       test -n "${LIBPLIST}" && echo "seeing if ${LIBPLIST} is available statically"
-      echo "pkg-config says: `pkg-config --libs-only-L ${LIBPLIST}`"
+      LIBPLIST_PKG_CONFIG_LIBDIR="`pkg-config --libs-only-L ${LIBPLIST}`"
+      if test "x${LIBPLIST_PKG_CONFIG_LIBDIR}" != "x"; then
+        test -n "${LIBPLIST_PKG_CONFIG_LIBDIR}" && echo "pkg-config says: ${LIBPLIST_PKG_CONFIG_LIBDIR}"
+      else
+        echo "outputting some attempts at debugging the relevant pkg-config file"
+        pkg-config --debug --libs-only-L ${LIBPLIST}
+        pkg-config --print-variables ${LIBPLIST}
+        pkg-config --print-errors ${LIBPLIST}
+        pkg-config --debug --validate ${LIBPLIST}
+      fi
       STATIC_LIBPLIST="`pkg-config --libs-only-L ${LIBPLIST} | sed "s/^..//; s/[ ]*$/\/${LIBPLIST}.a/"`"
     else
       STATIC_LIBPLIST="`pkg-config --libs-only-L libplist | sed "s/^..//; s/[ ]*$/\/libplist.a/"`"
