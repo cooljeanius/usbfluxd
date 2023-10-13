@@ -143,16 +143,29 @@ AC_ARG_WITH([static-libplist],
                             [link against a static libplist])],
             [with_static_libplist=${withval}],
             [with_static_libplist=yes])
-if test "x$with_static_libplist" != "xno"; then
+if test "x${with_static_libplist}" != "xno"; then
   if test "x${with_static_libplist}" = "xyes"; then
     if test "x${LIBPLIST}" != "x"; then
       test -n "${LIBPLIST}" && echo "seeing if ${LIBPLIST} is available statically"
       STATIC_LIBPLIST="`pkg-config --libs-only-L ${LIBPLIST} | sed "s/^..//; s/[ ]*$/\/${LIBPLIST}.a/"`"
     else
-      STATIC_LIBPLIST="`pkg-config --libs-only-L libplist | sed 's/^..//; s/[ ]*$/\/libplist.a/'`"
+      STATIC_LIBPLIST="`pkg-config --libs-only-L libplist | sed "s/^..//; s/[ ]*$/\/libplist.a/"`"
     fi
   else
-    STATIC_LIBPLIST="${with_static_libplist}"
+    if test "x${with_static_libplist}" != "x"; then
+      test -n "${with_static_libplist}" && STATIC_LIBPLIST="${with_static_libplist}"
+    elif test -x "`which locate`"; then
+      echo "attempting to locate libplist.a; this may take awhile..."
+      STATIC_LIBPLIST="`locate libplist.a | head -n 1`"
+    elif test -x "`which find`"; then
+      echo "attempting to find libplist.a; this may take awhile..."
+      STATIC_LIBPLIST="`find / -name libplist.a 2>/dev/null | head -n 1`"
+    else
+      STATIC_LIBPLIST=libplist.a
+    fi
+    if test "x${STATIC_LIBPLIST}" = "x"; then
+      test -z "${STATIC_LIBPLIST}" && export STATIC_LIBPLIST=libplist.a
+    fi
   fi
   if ! test -f "${STATIC_LIBPLIST}"; then
     AC_MSG_ERROR([The file ${STATIC_LIBPLIST} passed to --with-static-libplist does not exist])
