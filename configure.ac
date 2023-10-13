@@ -155,7 +155,12 @@ if test "x${with_static_libplist}" != "xno"; then
         echo "outputting some attempts at debugging the relevant pkg-config file"
         echo "'pkg-config --debug --libs-only-L ${LIBPLIST}' says:" && pkg-config --debug --libs-only-L ${LIBPLIST}
         echo "'pkg-config --print-variables ${LIBPLIST}' says:" && pkg-config --print-variables ${LIBPLIST}
-        echo "'pkg-config --print-errors ${LIBPLIST}' says:" && pkg-config --print-errors ${LIBPLIST}
+        PKG_CONFIG_LIBPLIST_ERRORS="`pkg-config --print-errors ${LIBPLIST}`"
+        if test "x${PKG_CONFIG_LIBPLIST_ERRORS}" != "x"; then
+          test -n "${PKG_CONFIG_LIBPLIST_ERRORS}" && echo "'pkg-config --print-errors ${LIBPLIST}' says: ${PKG_CONFIG_LIBPLIST_ERRORS}"
+        else
+          test -z "${PKG_CONFIG_LIBPLIST_ERRORS}" echo "pkg-config has no errors to report for ${LIBPLIST}."
+        fi
         echo "'pkg-config --debug --validate ${LIBPLIST}' says:" && pkg-config --debug --validate ${LIBPLIST}
         PKG_CONFIG_LIBDIR_LIBPLIST="`pkg-config --variable=libdir ${LIBPLIST}`"
         if test "x${PKG_CONFIG_LIBDIR_LIBPLIST}" != "x"; then
