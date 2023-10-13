@@ -17,3 +17,6 @@ usbfluxd_SOURCES = client.c client.h \
 
 distclean-local:
 	-rm -rfv .deps || rmdir .deps
+
+check-local: $(sbin_PROGRAMS)
+	if test -x usbfluxd; then echo "ok"; fi

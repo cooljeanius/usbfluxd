@@ -27,5 +27,5 @@ if [ -z "${NOCONFIGURE}" ]; then
     echo "Running generated configure script..."
     ./configure "$@"
 else
-    echo "NOCONFIGURE set; skipping running configure script"
+    echo "NOCONFIGURE set; skipping running configure script (from autogen.sh, at least)"
 fi

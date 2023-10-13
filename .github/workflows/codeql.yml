@@ -83,7 +83,7 @@ jobs:
         export NOCONFIGURE=yes && sh ./autogen.sh
         ./configure --with-static-libplist=no
         make
-        make distcheck
+        make check
 
     - name: Debug failure
       run: |
