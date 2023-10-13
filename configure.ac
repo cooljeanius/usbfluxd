@@ -5,7 +5,7 @@ AC_PREREQ([2.64])
 AC_INIT([usbfluxd],[1.2.0],[https://corellium.com],[],[https://corellium.com])
 AM_INIT_AUTOMAKE([dist-bzip2 no-dist-gzip check-news])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES])
-AC_CONFIG_SRCDIR([src/])
+AC_CONFIG_SRCDIR([usbfluxd/])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])dnl
 
@@ -28,12 +28,31 @@ AC_DEFUN([AC_REQUIRE_PROGS],[
 AC_REQUIRE_PROGS
 
 # Checks for libraries.
-PKG_CHECK_MODULES([libplist],[libplist >= 1.11])
+PKG_CHECK_MODULES([libplist],[libplist >= 2.2.0],
+  [
+    AC_DEFINE([HAVE_LIBPLIST],[1],[Use libplist])
+    LIBPLIST=libplist
+  ],[
+    PKG_CHECK_MODULES([libplist],[libplist-2.0 >= 2.2.0],[
+    LIBPLIST=libplist-2.0
+    AC_DEFINE([HAVE_LIBPLIST_2_0],[1],[Use libplist-2.0])
+  ])],
+[])dnl
+
+if test "x${LIBPLIST}" != "x"; then
+  CFLAGS_save="${CFLAGS}"
+  CFLAGS="${CFLAGS} ${libplist_CFLAGS}"
+  AC_CHECK_DECLS([plist_format_typedef],[],[],[
+    #include <plist/plist.h>
+    plist_format_t plist_format_typedef;
+  ])
+  CFLAGS="${CFLAGS_save}"
+fi
 AC_CHECK_LIB([pthread],[pthread_create, pthread_mutex_lock],
              [AC_SUBST([libpthread_LIBS],[-lpthread])],
              [AC_MSG_ERROR([libpthread is required to build usbfluxd])])dnl
 
-AC_SEARCH_LIBS([fmin], [m])
+AC_SEARCH_LIBS([fmin],[m])dnl
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
@@ -116,7 +135,7 @@ case ${host_os} in
     fi
     ;;
 esac
-AC_SUBST([AC_LDADD])
+AC_SUBST([AC_LDADD])dnl
 AM_CONDITIONAL([WIN32],[test "x${win32}" = "xtrue"])dnl
 
 AC_ARG_WITH([static-libplist],
@@ -126,7 +145,12 @@ AC_ARG_WITH([static-libplist],
             [with_static_libplist=yes])
 if test "x$with_static_libplist" != "xno"; then
   if test "x${with_static_libplist}" = "xyes"; then
-    STATIC_LIBPLIST="`pkg-config --libs-only-L libplist | sed 's/^..//; s/[ ]*$/\/libplist.a/'`"
+    if test "x${LIBPLIST}" != "x"; then
+      test -n "${LIBPLIST}" && echo "seeing if ${LIBPLIST} is available statically"
+      STATIC_LIBPLIST="`pkg-config --libs-only-L ${LIBPLIST} | sed "s/^..//; s/[ ]*$/\/${LIBPLIST}.a/"`"
+    else
+      STATIC_LIBPLIST="`pkg-config --libs-only-L libplist | sed 's/^..//; s/[ ]*$/\/libplist.a/'`"
+    fi
   else
     STATIC_LIBPLIST="${with_static_libplist}"
   fi
@@ -150,7 +174,7 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
 # Output.
 AC_CONFIG_FILES([
 Makefile
-src/Makefile
+usbfluxd/Makefile
 tools/Makefile
 ])
 AC_OUTPUT
