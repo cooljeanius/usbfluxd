@@ -78,7 +78,8 @@ jobs:
         echo "Run, Build Application using script"
         ls
         if test -x "$(which xcodebuild)"; then cd USBFlux && xcodebuild; fi
-        sh ./autogen.sh || sh ./build-gui.sh || sh ./makedmg.sh
+        sh ./autogen.sh NOCONFIGURE=yes
+        ./configure --without-static-libplist
         make
         make distcheck
 
