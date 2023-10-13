@@ -34,6 +34,8 @@ libtool
 *Makefile
 py-compile
 stamp-h1
+src/.libs
+src/usbfluxd
 usbfluxd/.libs
 usbfluxd/usbfluxd
 tools/usbfluxctl
