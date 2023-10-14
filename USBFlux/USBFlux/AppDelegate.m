@@ -420,7 +420,10 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
         NSLog(@"ERR failed to get process list");
     } else {
         int i;
-        for (i = 0; i < proc_count; i++) {
+        if (proc_count > INT_MAX) {
+            proc_count = INT_MAX;
+        }
+        for (i = 0; i < (int)proc_count; i++) {
             if (strcmp(proc_list[i].kp_proc.p_comm, "usbfluxd") == 0) {
                 pid = proc_list[i].kp_proc.p_pid;
                 break;
@@ -467,7 +470,10 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     
     int i;
     BOOL found = NO;
-    for (i = 0; i < proc_count; i++) {
+    if (proc_count > INT_MAX) {
+    	proc_count = INT_MAX;
+    }
+    for (i = 0; i < (int)proc_count; i++) {
         if (strcmp((&proc_list[i])->kp_proc.p_comm, "usbfluxd") == 0) {
             found = YES;
             break;

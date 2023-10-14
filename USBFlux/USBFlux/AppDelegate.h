@@ -10,5 +10,7 @@
 
 @interface AppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate>
 
+extern NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len);
+
 @end
 
