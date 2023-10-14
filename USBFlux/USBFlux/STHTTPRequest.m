@@ -57,6 +57,7 @@ static STHTTPRequestCookiesStorage globalCookiesStoragePolicy = STHTTPRequestCoo
 
 /**/
 
+API_AVAILABLE(macos(10.9))
 @interface STHTTPRequest ()
 
 @property (nonatomic) NSInteger responseStatus;
@@ -370,7 +371,12 @@ static STHTTPRequestCookiesStorage globalCookiesStoragePolicy = STHTTPRequestCoo
     NSMutableArray *sortedDictionaries = [NSMutableArray arrayWithCapacity:[dictionary count]];
     
     for(NSString *key in sortedKeys) {
-        NSDictionary *d = @{ key : dictionary[key] };
+    	NSDictionary *d;
+        if (@available(macOS 10.8, *)) {
+            d = @{ key : dictionary[key] };
+        } else {
+            d = NULL; // Fallback on earlier versions
+        }
         [sortedDictionaries addObject:d];
     }
     return sortedDictionaries;
@@ -712,7 +718,12 @@ static STHTTPRequestCookiesStorage globalCookiesStoragePolicy = STHTTPRequestCoo
     
     if(_rawPOSTData) {
         // try JSON
-        id jsonObject = [NSJSONSerialization JSONObjectWithData:_rawPOSTData options:NSJSONReadingMutableContainers error:nil];
+        id jsonObject;
+        if (@available(macOS 10.7, *)) {
+        	jsonObject = [NSJSONSerialization JSONObjectWithData:_rawPOSTData options:NSJSONReadingMutableContainers error:nil];
+        } else {
+        	jsonObject = nil;
+        }
         if(jsonObject) {
             NSString *jsonString = [[NSString alloc] initWithData:_rawPOSTData encoding:NSUTF8StringEncoding];
             //            [ma addObject:@"-X POST"];
@@ -943,7 +954,7 @@ static STHTTPRequestCookiesStorage globalCookiesStoragePolicy = STHTTPRequestCoo
 
 
 #if __has_extension(blocks)
-+ (void(^)())backgroundCompletionHandlerForSessionIdentifier:(NSString *)sessionIdentifier {
++ (void(^)(void))backgroundCompletionHandlerForSessionIdentifier:(NSString *)sessionIdentifier {
     return sessionCompletionHandlersForIdentifier[sessionIdentifier];
 }
 #endif
@@ -959,7 +970,8 @@ static STHTTPRequestCookiesStorage globalCookiesStoragePolicy = STHTTPRequestCoo
 
 #pragma mark NSURLSessionDelegate
 
-- (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error {
+- (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error  API_AVAILABLE(macos(10.9))
+{
     
     OBJC_WEAK typeof(self) weakSelf = self;
     
@@ -977,6 +989,7 @@ static STHTTPRequestCookiesStorage globalCookiesStoragePolicy = STHTTPRequestCoo
 }
 
 - (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
+API_AVAILABLE(macos(10.9))
 {
     // accept self-signed SSL certificates
     if([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
@@ -1063,7 +1076,8 @@ static STHTTPRequestCookiesStorage globalCookiesStoragePolicy = STHTTPRequestCoo
     completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
 }
 
-- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session NS_AVAILABLE_IOS(7_0) {
+- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session NS_AVAILABLE_IOS(7_0) API_AVAILABLE(macos(10.9))
+{
     
     dispatch_async(dispatch_get_main_queue(), ^{
         
@@ -1083,7 +1097,8 @@ static STHTTPRequestCookiesStorage globalCookiesStoragePolicy = STHTTPRequestCoo
               task:(NSURLSessionTask *)task
 willPerformHTTPRedirection:(NSHTTPURLResponse *)response
         newRequest:(NSURLRequest *)request
- completionHandler:(void (^)(NSURLRequest *))completionHandler {
+ completionHandler:(void (^)(NSURLRequest *))completionHandler API_AVAILABLE(macos(10.9))
+ {
     
     OBJC_WEAK typeof(self) weakSelf = self;
     
@@ -1099,7 +1114,8 @@ willPerformHTTPRedirection:(NSHTTPURLResponse *)response
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
    didSendBodyData:(int64_t)bytesSent
     totalBytesSent:(int64_t)totalBytesSent
-totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
+totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend API_AVAILABLE(macos(10.9))
+{
     
     OBJC_WEAK typeof(self) weakSelf = self;
     
@@ -1117,7 +1133,8 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
 
 - (void)URLSession:(NSURLSession *)session
               task:(NSURLSessionTask *)task
-didCompleteWithError:(NSError *)error {
+didCompleteWithError:(NSError *)error_in API_AVAILABLE(macos(10.9))
+{
     
     OBJC_WEAK typeof(self) weakSelf = self;
     
@@ -1126,8 +1143,8 @@ didCompleteWithError:(NSError *)error {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if(strongSelf == nil) return;
         
-        if (error) {
-            strongSelf.errorBlock(error);
+        if (error_in) {
+            strongSelf.errorBlock(error_in);
             [session finishTasksAndInvalidate];
             return;
         }
@@ -1147,10 +1164,10 @@ didCompleteWithError:(NSError *)error {
         }
         
         if(strongSelf.HTTPBodyFileURL) {
-            NSError *error = nil;
-            BOOL status = [[NSFileManager defaultManager] removeItemAtURL:strongSelf.HTTPBodyFileURL error:&error];
+            NSError *error_local = nil;
+            BOOL status = [[NSFileManager defaultManager] removeItemAtURL:strongSelf.HTTPBodyFileURL error:&error_local];
             if(status == NO) {
-                NSLog(@"-- can't remove %@, %@", strongSelf.HTTPBodyFileURL, [error localizedDescription]);
+                NSLog(@"-- cannot remove %@, %@", strongSelf.HTTPBodyFileURL, [error_local localizedDescription]);
             }
         }
         
@@ -1235,7 +1252,8 @@ didCompleteWithError:(NSError *)error {
 - (void)URLSession:(NSURLSession *)session
           dataTask:(NSURLSessionDataTask *)dataTask
 didReceiveResponse:(NSURLResponse *)response
- completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
+ completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler API_AVAILABLE(macos(10.9))
+ {
     
     OBJC_WEAK typeof(self) weakSelf = self;
     
@@ -1265,7 +1283,8 @@ didReceiveResponse:(NSURLResponse *)response
 
 - (void)URLSession:(NSURLSession *)session
           dataTask:(NSURLSessionDataTask *)dataTask
-    didReceiveData:(NSData *)data {
+    didReceiveData:(NSData *)data API_AVAILABLE(macos(10.9))
+{
     
     OBJC_WEAK typeof(self) weakSelf = self;
     
@@ -1286,7 +1305,8 @@ didReceiveResponse:(NSURLResponse *)response
 - (void)URLSession:(NSURLSession *)session
           dataTask:(NSURLSessionDataTask *)dataTask
  willCacheResponse:(NSCachedURLResponse *)proposedResponse
- completionHandler:(void (^)(NSCachedURLResponse *cachedResponse))completionHandler {
+ completionHandler:(void (^)(NSCachedURLResponse *cachedResponse))completionHandler  API_AVAILABLE(macos(10.9))
+ {
     
     OBJC_WEAK typeof(self) weakSelf = self;
     

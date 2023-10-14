@@ -81,8 +81,8 @@ AC_REQUIRE_HEADER_STDC
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_TIME
 AC_CHECK_HEADERS([CFNetwork/CFNetServices.h])
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h mach/mach_time.h netdb.h netinet/in.h \
-                  sys/statvfs.h sys/time.h syslog.h])dnl
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h features.h mach/mach_time.h netdb.h \
+                  netinet/in.h sys/statvfs.h sys/time.h syslog.h])dnl
 
 if test "x${ac_cv_header_stdint_h}" = "x"; then
   test -z "${ac_cv_header_stdint_h}"
@@ -234,7 +234,7 @@ if test "x${ac_cv_header_sys_socket_h}" = "x"; then
   AC_CHECK_HEADERS([sys/socket.h])
 fi
 
-AS_COMPILER_FLAGS([GLOBAL_CFLAGS],["-g -Wall -Wextra -Wmissing-declarations -Wredundant-decls -Wshadow -Wpointer-arith -Wwrite-strings -Wswitch-default -Wno-unused-parameter"])
+AS_COMPILER_FLAGS([GLOBAL_CFLAGS],["-g -Wall -Wextra -Wmissing-declarations -Wredundant-decls -Wshadow -Wpointer-arith -Wwrite-strings -Wswitch-default -Wformat=2 -Werror=format-security -Wpedantic -Wc++-compat -Wno-unused-parameter"])
 AC_SUBST([GLOBAL_CFLAGS])dnl
 
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl

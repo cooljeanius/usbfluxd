@@ -116,7 +116,8 @@ void collection_remove(struct collection *col, void *element)
 			return;
 		}
 	}
-	util_error("collection_remove: element %p not present in collection %p (cap %d)", element, col, col->capacity);
+	util_error("collection_remove: element %p not present in collection %p (cap %d)",
+                   element, (void *)col, col->capacity);
 }
 
 int collection_count(struct collection *col)

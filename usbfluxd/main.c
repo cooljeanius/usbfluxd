@@ -20,12 +20,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#define _BSD_SOURCE
-#define _GNU_SOURCE
+#ifndef _BSD_SOURCE
+# define _BSD_SOURCE
+#endif /* !_BSD_SOURCE */
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE
+#endif /* !_GNU_SOURCE */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# include <config.h>
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 #include <errno.h>

@@ -19,8 +19,8 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# include <config.h>
+#endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,14 +65,16 @@ void usbfluxd_log(enum loglevel level, const char *fmt, ...)
 {
 	va_list ap;
 	char *fs;
+	size_t fssize;
 
 	if(level > log_level)
 		return;
 
-	fs = malloc(20 + strlen(fmt));
+	fssize = (20UL + strlen(fmt));
+	fs = malloc(fssize);
 
 	if(log_syslog) {
-		sprintf(fs, "[%d] %s\n", level, fmt);
+		snprintf(fs, fssize, "[%d] %s\n", level, fmt);
 	} else {
 		struct timeval ts;
 		struct tm *tp;
@@ -83,7 +85,7 @@ void usbfluxd_log(enum loglevel level, const char *fmt, ...)
 		tp = localtime_r(&ts.tv_sec, &tp_);
 #else
 		tp = localtime(&ts.tv_sec);
-#endif
+#endif /* HAVE_LOCALTIME_R */
 
 		strftime(fs, 10, "[%H:%M:%S", tp);
 		sprintf(fs+9, ".%03d][%d] %s\n", (int)(ts.tv_usec / 1000), level, fmt);

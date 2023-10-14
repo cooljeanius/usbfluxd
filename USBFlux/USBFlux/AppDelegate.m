@@ -253,7 +253,7 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     OSStatus status = AuthorizationCreate(NULL, kAuthorizationEmptyEnvironment,
                                           kAuthorizationFlagDefaults, &authorizationRef);
     if (status != errAuthorizationSuccess) {
-        NSLog(@"%s: AuthorizationCreate failed: %ld", __func__, status);
+        NSLog(@"%s: AuthorizationCreate failed: %ld", __func__, (long)status);
         return nil;
     }
     
@@ -270,7 +270,7 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     
     status = AuthorizationCopyRights(authorizationRef, &rights, &environment, flags, NULL);
     if (status != errAuthorizationSuccess) {
-        NSLog(@"%s: AuthorizationCopyRights failed: %ld", __func__, status);
+        NSLog(@"%s: AuthorizationCopyRights failed: %ld", __func__, (long)status);
         AuthorizationFree(authorizationRef, kAuthorizationFlagDestroyRights);
         return nil;
     }
@@ -290,7 +290,7 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     FILE *fpipe = NULL;
     OSStatus status = AuthorizationExecuteWithPrivileges(auth, cmd, kAuthorizationFlagDefaults, args, &fpipe);
     if (status != errAuthorizationSuccess) {
-        NSLog(@"Failed to execute %s: %ld", cmd, status);
+        NSLog(@"Failed to execute %s: %ld", cmd, (long)status);
     } else {
         int stat_loc;
         wait(&stat_loc);
@@ -303,12 +303,12 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
 - (void)fixupUSBFluxDaemonPermissions
 {
     const char *command1 = "/usr/sbin/chown";
-    char *args1[] = { "0:0", usbfluxd_path, terminate_path, NULL };
-    [self runCommandWithAuth:authorization command:(char *)command1 arguments:args1];
+    const char *args1[] = { "0:0", usbfluxd_path, terminate_path, NULL };
+    [self runCommandWithAuth:authorization command:(char *)command1 arguments:(char **)args1];
 
     const char *command2 = "/bin/chmod";
-    char *args2[] = { "4755", usbfluxd_path, terminate_path, NULL };
-    [self runCommandWithAuth:authorization command:(char *)command2 arguments:args2];
+    const char *args2[] = { "4755", usbfluxd_path, terminate_path, NULL };
+    [self runCommandWithAuth:authorization command:(char *)command2 arguments:(char **)args2];
 }
 
 - (BOOL)checkUSBFluxDaemonPermissions
@@ -377,12 +377,12 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     posix_spawn_file_actions_init(&action);
     
     pid_t pid = 0;
-    char *argv[4] = { usbfluxd_path, "-v", NULL, NULL};
+    const char *argv[4] = { usbfluxd_path, "-v", NULL, NULL};
     if (no_mdns) {
         argv[2] = "-m";
     }
     char *env[] = { NULL };
-    int status1 = posix_spawn(&pid, argv[0], &action, &spawnattr, argv, env);
+    int status1 = posix_spawn(&pid, (char *)argv[0], &action, &spawnattr, (char *const *)argv, env);
     if (status1 != 0) {
         NSLog(@"posix_spawn failed: %s", strerror(status1));
     } else {
@@ -432,7 +432,7 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     pid_s[0] = '\0';
     char *argv[3] = { terminate_path, pid_s, NULL };
     if (pid > 0) {
-        sprintf(pid_s, "%d", pid);
+        snprintf(pid_s, sizeof(pid_s), "%d", pid);
     } else {
         argv[1] = NULL;
     }

@@ -990,10 +990,11 @@ void usbmux_remote_dispose(struct remote_mux *remote)
 	plist_dict_foreach(remote_device_list, remote_device_notify_remove, (void*)remote);
 	collection_remove(&remote_list, remote);
 	if (remote->client) {
-#ifdef HAVE_CLIENT_CLEAR_REMOTE
+#if defined(HAVE_CLIENT_CLEAR_REMOTE) || defined(CLIENT_H)
 		client_clear_remote(remote->client);
-#endif /* HAVE_CLIENT_CLEAR_REMOTE */
-		usbfluxd_log(LL_DEBUG, "Remote %p notifying close client %p", remote, remote->client);
+#endif /* HAVE_CLIENT_CLEAR_REMOTE || CLIENT_H */
+		usbfluxd_log(LL_DEBUG, "Remote %p notifying close client %p",
+                             (void *)remote, (void *)remote->client);
 		client_notify_remote_close(remote->client);
 	}
 
@@ -1012,7 +1013,7 @@ void usbmux_remote_dispose(struct remote_mux *remote)
 static void usbmux_remote_mark_dead(struct remote_mux *remote)
 {
 	pthread_mutex_lock(&remote_list_mutex);
-	usbfluxd_log(LL_DEBUG, "%s: %p", __func__, remote);
+	usbfluxd_log(LL_DEBUG, "%s: %p", __func__, (void *)remote);
 	remote_mark_dead(remote);
 	pthread_mutex_unlock(&remote_list_mutex);
 }
@@ -1119,7 +1120,7 @@ plist_t usbmux_remote_copy_instances()
 			plist_dict_set_item(entry, "Devices", devices);
 
 			char id_str[8];
-			sprintf(id_str, "%d", remote->id);
+			snprintf(id_str, sizeof(id_str), "%d", remote->id);
 			plist_dict_set_item(dict, id_str, entry);
 		}
 	} ENDFOREACH
@@ -1233,7 +1234,7 @@ static int remote_handle_command_result(struct remote_mux *remote, struct usbmux
 			}
 		}
 		char s_devid[16];
-		sprintf(s_devid, "0x%08x", devid);
+		snprintf(s_devid, sizeof(s_devid), "0x%08x", devid);
 		
 		if (type == MESSAGE_DEVICE_ADD) {
 			if (!plist_msg) {

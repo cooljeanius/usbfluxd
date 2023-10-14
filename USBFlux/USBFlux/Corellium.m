@@ -9,6 +9,19 @@
 #import "Corellium.h"
 #import "STHTTPRequest.h"
 
+#ifndef __has_feature
+# define __has_feature(foo) 0
+#endif /* !__has_feature */
+
+#if __has_feature(objc_arc)
+# ifndef ALLOW_IVARS_IN_CLASS_EXTENSION
+#  define ALLOW_IVARS_IN_CLASS_EXTENSION 1
+# endif /* !ALLOW_IVARS_IN_CLASS_EXTENSION */
+# ifndef DO_DYNAMIC_AT_TOP
+#  define DO_DYNAMIC_AT_TOP 1
+# endif /* !DO_DYNAMIC_AT_TOP */
+#endif /* __has_feature(objc_arc) */
+
 #ifdef ALLOW_IVARS_IN_CLASS_EXTENSION
 @interface Corellium ()
 {
@@ -63,7 +76,7 @@
     [requestDict setObject:username forKey:@"username"];
     [requestDict setObject:password forKey:@"password"];
     
-    STHTTPRequest *request = [STHTTPRequest requestWithURLString:[NSString stringWithFormat:@"%@/tokens", endpoint]];
+    STHTTPRequest *request = [STHTTPRequest requestWithURLString:[NSString stringWithFormat:@"%@/tokens", (id)endpoint]];
     [request setHTTPMethod:@"POST"];
     [request setHeaderWithName:@"Content-Type" value:@"application/json"];
     [request setHeaderWithName:@"Accept" value:@"application/json"];
@@ -80,8 +93,13 @@
         }
         return nil;
     }
-    
-    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:[response dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&err];
+
+    NSDictionary *json;
+    if (@available(macOS 10.7, *)) {
+    	json = [NSJSONSerialization JSONObjectWithData:[response dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&err];
+    } else {
+    	json = nil;
+    }
     if (json && [json objectForKey:@"token"]) {
         token = json;
     } else {
@@ -96,19 +114,19 @@
 -(BOOL)login:(NSError**)error
 {
     token = nil;
-    return ([self getToken:error]) ? YES : NO;
+    return (([self getToken:error]) ? YES : NO);
 }
 
 -(id)projects:(NSError**)error
 {
     NSDictionary *token = [self getToken:error];
-    NSString *token_token = (token) ? [token objectForKey:@"token"] : nil;
+    NSString *token_token = ((token) ? [token objectForKey:@"token"] : nil);
     if (!token || !token_token) {
         NSLog(@"ERROR: projects: invalid token");
         return nil;
     }
     
-    STHTTPRequest *request = [STHTTPRequest requestWithURLString:[NSString stringWithFormat:@"%@/projects", endpoint]];
+    STHTTPRequest *request = [STHTTPRequest requestWithURLString:[NSString stringWithFormat:@"%@/projects", (id)endpoint]];
     [request setHeaderWithName:@"Authorization" value:token_token];
     [request setHeaderWithName:@"Accept" value:@"application/json"];
     NSString *response = nil;
@@ -122,7 +140,12 @@
         return nil;
     }
     
-    id json = [NSJSONSerialization JSONObjectWithData:[response dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&err];
+    id json;
+    if (@available(macOS 10.7, *)) {
+    	json = [NSJSONSerialization JSONObjectWithData:[response dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&err];
+    } else {
+    	json = nil;
+    }
     if (!json) {
         NSLog(@"failed to parse response while getting list of projects");
         return nil;
@@ -147,13 +170,13 @@
 -(id)instances:(NSError**)error withQuery:(NSString*)query
 {
     NSDictionary *token = [self getToken:error];
-    NSString *token_token = (token) ? [token objectForKey:@"token"] : nil;
+    NSString *token_token = ((token) ? [token objectForKey:@"token"] : nil);
     if (!token || !token_token) {
         NSLog(@"ERROR: instances:withQuery: invalid token");
         return nil;
     }
     
-    STHTTPRequest *request = [STHTTPRequest requestWithURLString:[NSString stringWithFormat:@"%@/instances%@%@", endpoint, (query) ? @"?" : @"", (query) ? query : @""]];
+    STHTTPRequest *request = [STHTTPRequest requestWithURLString:[NSString stringWithFormat:@"%@/instances%@%@", (id)endpoint, (query) ? @"?" : @"", (query) ? query : @""]];
     [request setHeaderWithName:@"Authorization" value:token_token];
     [request setHeaderWithName:@"Accept" value:@"application/json"];
     
@@ -167,7 +190,12 @@
         }
         return nil;
     }
-    id json = [NSJSONSerialization JSONObjectWithData:[response dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&err];
+    id json;
+    if (@available(macOS 10.7, *)) {
+     	json = [NSJSONSerialization JSONObjectWithData:[response dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&err];
+    } else {
+    	json = nil;
+    }
     if (!json) {
         NSLog(@"failed to parse response while getting list of instances");
         return nil;

@@ -235,16 +235,20 @@ int client_accept(int listenfd)
 
 void client_close(struct mux_client *client)
 {
-	usbfluxd_log(LL_INFO, "Disconnecting client %p fd %d", client, client->fd);
+	usbfluxd_log(LL_INFO, "Disconnecting client %p fd %d", (void *)client,
+                     client->fd);
 	if(client->state == CLIENT_CONNECTING1 || client->state == CLIENT_CONNECTING2) {
 		usbfluxd_log(LL_INFO, "Client died mid-connect, aborting device %d connection", client->connect_device);
 		client->state = CLIENT_DEAD;
-		//device_abort_connect(client->connect_device, client);
+#if 0
+		device_abort_connect(client->connect_device, client);
+#endif /* 0 */
 	}
 	close(client->fd);
 	if (client->remote) {
 		usbmux_remote_clear_client(client->remote);
-		usbfluxd_log(LL_DEBUG, "Client %p notifying close on remote %p", client, client->remote);
+		usbfluxd_log(LL_DEBUG, "Client %p notifying close on remote %p",
+                             (void *)client, (void *)client->remote);
 		usbmux_remote_notify_client_close(client->remote);
 	}
 	free(client->ob_buf);
@@ -393,7 +397,7 @@ int client_notify_connect(struct mux_client *client, enum usbmuxd_result result)
 
 void client_notify_remote_close(struct mux_client *client)
 {
-	usbfluxd_log(LL_DEBUG, "%s %p", __func__, client);
+	usbfluxd_log(LL_DEBUG, "%s %p", __func__, (void *)client);
 	client_close(client);
 }
 
@@ -445,8 +449,9 @@ static int send_listener_list(struct mux_client *client, uint32_t tag)
 			if (!progname) {
 				progname = strdup("unknown");
 			}
-			char *idstring = malloc(strlen(progname) + 12);
-			sprintf(idstring, "%u-%s", client->number, progname);
+   			size_t idstring_len = (strlen(progname) + 12UL);
+			char *idstring = malloc(idstring_len);
+			snprintf(idstring, idstring_len, "%u-%s", client->number, progname);
 
 			plist_dict_set_item(l, "ID String", plist_new_string(idstring));
 			free(idstring);
@@ -1087,10 +1092,12 @@ void client_device_remove(uint32_t device_id)
 void client_remote_unset(struct remote_mux *remote)
 {
 	pthread_mutex_lock(&client_list_mutex);
-	usbfluxd_log(LL_DEBUG, "%s: %p", __func__, remote);
+	usbfluxd_log(LL_DEBUG, "%s: %p", __func__, (void *)remote);
 	FOREACH(struct mux_client *client, &client_list) {
 		if (client->remote == remote) {
-			usbfluxd_log(LL_DEBUG, "Removing remote %p from client %p", remote, client);
+			usbfluxd_log(LL_DEBUG,
+                                     "Removing remote %p from client %p",
+                                     (void *)remote, (void *)client);
 			client->remote = NULL;
 		}
 	} ENDFOREACH
