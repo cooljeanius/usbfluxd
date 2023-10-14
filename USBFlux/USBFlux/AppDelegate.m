@@ -43,7 +43,8 @@ static AuthorizationRef authorization = nil;
 #ifdef OBJC_WEAK
 # undef OBJC_WEAK
 #endif /* OBJC_WEAK */
-#if __has_feature(objc_arc) && __has_feature(objc_arc_weak)
+/* FIXME: find the right preprocessor conditional to use here: */
+#if __has_feature(objc_arc) && __has_feature(objc_arc_weak) && 0
 # define OBJC_WEAK __weak
 #else
 # define OBJC_WEAK /* (nothing) */
@@ -210,7 +211,7 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
         } else if ((result_of_send > 0) && ((uint32_t)result_of_send == req_len)) {
             if (recv(sfd, &muxhdr, sizeof(struct usbmuxd_header), 0) == sizeof(struct usbmuxd_header)) {
                 if ((muxhdr.version == 1) && (muxhdr.message == 8) && (muxhdr.tag == 0)) {
-                    char *p = &buf[0];
+                    char *p;
                     uint32_t rr = 0;
                     uint32_t total = muxhdr.length - sizeof(struct usbmuxd_header);
                     if (total > sizeof(buf)) {
@@ -236,7 +237,7 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
                     }
                 }
             } else {
-                NSLog(@"didn't receive as much data as we need");
+                NSLog(@"failed to receive as much data as we need");
             }
         }
     }
@@ -559,7 +560,7 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     unsigned int req_len = snprintf(req_xml, 255, "<plist version=\"1.0\"><dict><key>MessageType</key><string>AddInstance</string><key>HostAddress</key><string>%s</string><key>PortNumber</key><integer>%u</integer></dict></plist>", [host UTF8String], port);
     NSDictionary *dict = usbfluxdQuery(req_xml, req_len);
     NSNumber *num = (dict) ? [dict objectForKey:@"Number"] : nil;
-    if (num) {
+    if (num != nil) {
         return [num intValue];
     }
     return -1;
@@ -571,7 +572,7 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
     unsigned int req_len = snprintf(req_xml, 255, "<plist version=\"1.0\"><dict><key>MessageType</key><string>RemoveInstance</string><key>HostAddress</key><string>%s</string><key>PortNumber</key><integer>%u</integer></dict></plist>", [host UTF8String], port);
     NSDictionary *dict = usbfluxdQuery(req_xml, req_len);
     NSNumber *num = (dict) ? [dict objectForKey:@"Number"] : nil;
-    if (num) {
+    if (num != nil) {
         return [num intValue];
     }
     return -1;
@@ -699,7 +700,8 @@ NSDictionary* usbfluxdQuery(const char* req_xml, uint32_t req_len)
             NSData *passwd = [creds objectForKey:(__bridge NSString*)kSecValueData];
             NSString *old_password = (passwd) ? [[NSString alloc] initWithData:passwd encoding:NSUTF8StringEncoding] : nil;
             CFRelease(pwData);
-            if (![username isEqualToString:old_username] || ![password isEqualToString:old_password]) {
+            if (![username isEqualToString:old_username]
+            	|| ((old_password != nil) && ![password isEqualToString:old_password])) {
                 /* update with new credentials */
                 CFDictionaryRef update_query = CFDictionaryCreate(kCFAllocatorDefault, check_keys, check_values, 4, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
                 NSData *d_passwd =[password dataUsingEncoding:NSUTF8StringEncoding];

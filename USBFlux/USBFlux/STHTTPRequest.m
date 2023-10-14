@@ -252,10 +252,10 @@ API_AVAILABLE(macos(10.9))
 + (void)addCookieToSharedCookiesStorage:(NSHTTPCookie *)cookie {
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
     
-#if DEBUG
+#if defined(DEBUG) && (DEBUG >= 1)
     NSHTTPCookie *readCookie = [[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies] lastObject];
     NSAssert(readCookie, @"cannot read any cookie after adding one");
-#endif
+#endif /* (DEBUG >= 1) */
 }
 
 - (void)addCookie:(NSHTTPCookie *)cookie {
@@ -441,8 +441,8 @@ API_AVAILABLE(macos(10.9))
     }
     
     NSArray *cookies = [self requestCookies];
-    NSDictionary *d = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
-    [request setAllHTTPHeaderFields:d];
+    NSDictionary *d0 = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+    [request setAllHTTPHeaderFields:d0];
     
     // escape POST dictionary keys and values if needed
     if(_encodePOSTDictionary) {
@@ -500,9 +500,9 @@ API_AVAILABLE(macos(10.9))
         /**/
         
         [sortedPOSTDictionaries enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            NSDictionary *d = (NSDictionary *)obj;
-            NSString *key = [[d allKeys] lastObject];
-            NSObject *value = [[d allValues] lastObject];
+            NSDictionary *d1 = (NSDictionary *)obj;
+            NSString *key = [[d1 allKeys] lastObject];
+            NSObject *value = [[d1 allValues] lastObject];
             
             [mutableBodyData appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
             [mutableBodyData appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
@@ -541,9 +541,9 @@ API_AVAILABLE(macos(10.9))
         NSMutableArray *ma = [NSMutableArray arrayWithCapacity:[_POSTDictionary count]];
         
         [sortedPOSTDictionaries enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            NSDictionary *d = (NSDictionary *)obj;
-            NSString *key = [[d allKeys] lastObject];
-            NSObject *value = [[d allValues] lastObject];
+            NSDictionary *d2 = (NSDictionary *)obj;
+            NSString *key = [[d2 allKeys] lastObject];
+            NSObject *value = [[d2 allValues] lastObject];
             
             NSString *kv = [NSString stringWithFormat:@"%@=%@", key, value];
             [ma addObject:kv];
@@ -814,7 +814,8 @@ API_AVAILABLE(macos(10.9))
 
 #pragma mark Start Request
 
-- (void)startAsynchronous {
+- (void)startAsynchronous API_AVAILABLE(macos(10.9))
+{
     
     NSAssert((self.completionBlock || self.completionDataBlock), @"a completion block is mandatory");
     NSAssert(self.errorBlock, @"the error block is mandatory");
@@ -827,7 +828,11 @@ API_AVAILABLE(macos(10.9))
         NSString *backgroundSessionIdentifier = [[NSProcessInfo processInfo] globallyUniqueString];
         if ([[NSURLSessionConfiguration class] respondsToSelector:@selector(backgroundSessionConfigurationWithIdentifier:)]) {
             // iOS 8+
-            sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:backgroundSessionIdentifier];
+            if (@available(macos 10.10, ios 8.0, *)) {
+            	sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:backgroundSessionIdentifier];
+            } else {
+            	sessionConfiguration = nil;
+            }
         } else {
             // iOS 7
             sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
@@ -838,8 +843,15 @@ API_AVAILABLE(macos(10.9))
     
     sessionConfiguration.allowsCellularAccess = YES;
     
-    NSString *containerIdentifier = _sharedContainerIdentifier ? _sharedContainerIdentifier : [[NSBundle mainBundle] bundleIdentifier];
-    sessionConfiguration.sharedContainerIdentifier = containerIdentifier;
+    NSString *containerIdentifier;
+    if (@available(macos 10.10, *)) {
+    	containerIdentifier = (_sharedContainerIdentifier
+                               ? _sharedContainerIdentifier
+                               : [[NSBundle mainBundle] bundleIdentifier]);
+    	sessionConfiguration.sharedContainerIdentifier = containerIdentifier;
+    } else {
+    	containerIdentifier = NULL;
+    }
     
     NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration
                                                           delegate:self
@@ -949,13 +961,21 @@ API_AVAILABLE(macos(10.9))
         sessionCompletionHandlersForIdentifier = [NSMutableDictionary dictionary];
     }
     
-    sessionCompletionHandlersForIdentifier[sessionIdentifier] = [completionHandler copy];
+    if (@available(macOS 10.8, *)) {
+        sessionCompletionHandlersForIdentifier[sessionIdentifier] = [completionHandler copy];
+    } else {
+        // Fallback on earlier versions (???)
+    }
 }
 
 
 #if __has_extension(blocks)
 + (void(^)(void))backgroundCompletionHandlerForSessionIdentifier:(NSString *)sessionIdentifier {
-    return sessionCompletionHandlersForIdentifier[sessionIdentifier];
+    if (@available(macOS 10.8, *)) {
+        return sessionCompletionHandlersForIdentifier[sessionIdentifier];
+    } else {
+        return nil; // Fallback on earlier versions
+    }
 }
 #endif
 
@@ -1076,7 +1096,7 @@ API_AVAILABLE(macos(10.9))
     completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
 }
 
-- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session NS_AVAILABLE_IOS(7_0) API_AVAILABLE(macos(10.9))
+- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session API_AVAILABLE(macos(10.9), ios(7.0), watchos(2.0), tvos(9.0))
 {
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -1200,9 +1220,19 @@ didCompleteWithError:(NSError *)error_in API_AVAILABLE(macos(10.9))
     __block NSError         *blkErr = nil;
     
     sem = dispatch_semaphore_create(0);
-    
-    NSURLSessionConfiguration *defaultConfigObject = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *defaultSession = [NSURLSession sessionWithConfiguration:defaultConfigObject delegate:self delegateQueue:nil];
+
+    NSURLSessionConfiguration *defaultConfigObject;
+    if (@available(macOS 10.9, *)) {
+    	defaultConfigObject = [NSURLSessionConfiguration defaultSessionConfiguration];
+    } else {
+    	defaultConfigObject = nil;
+    }
+    NSURLSession *defaultSession;
+    if (@available(macOS 10.9, *)) {
+        defaultSession = [NSURLSession sessionWithConfiguration:defaultConfigObject delegate:self delegateQueue:nil];
+    } else {
+        defaultSession = nil; // Fallback on earlier versions
+    }
     
     [[defaultSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *err)
       {
