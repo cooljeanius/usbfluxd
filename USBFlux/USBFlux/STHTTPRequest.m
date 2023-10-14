@@ -377,7 +377,9 @@ API_AVAILABLE(macos(10.9))
         } else {
             d = NULL; // Fallback on earlier versions
         }
-        [sortedDictionaries addObject:d];
+        if (d != nil) {
+        	[sortedDictionaries addObject:d];
+        }
     }
     return sortedDictionaries;
 }
@@ -1020,6 +1022,10 @@ API_AVAILABLE(macos(10.9))
         BOOL trusted = NO;
         
         err = SecTrustEvaluate(trust, &trustResult);
+
+        if (err) {
+            ; // (???)
+        }
         
         if (trustResult == kSecTrustResultProceed || trustResult == kSecTrustResultUnspecified) {
             trusted = YES;
@@ -1086,11 +1092,17 @@ API_AVAILABLE(macos(10.9))
             
         err = SecTrustEvaluate(trust, &trustResult);
 
+        if (err) {
+            ; // (???)
+        }
+
         if (trustResult == kSecTrustResultProceed || trustResult == kSecTrustResultUnspecified) {
             NSURLCredential *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
             completionHandler(NSURLSessionAuthChallengeUseCredential,credential);
             return;
         }
+
+        (void)trusted;
     }
             
     completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
@@ -1269,7 +1281,7 @@ didCompleteWithError:(NSError *)error_in API_AVAILABLE(macos(10.9))
     }
     
     self.responseString = [self stringWithData:result encodingName:_responseStringEncodingName];
-    self.responseData = [NSMutableData dataWithData:result];
+    self.responseData = ((result != nil) ? [NSMutableData dataWithData:result] : nil);
     if(self.responseStatus >= 400) {
         if (error != NULL) *error = [self errorDescribingRequestNonfulfillment];
     }

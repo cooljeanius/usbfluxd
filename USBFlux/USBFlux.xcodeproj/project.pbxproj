@@ -430,7 +430,7 @@
 				DEVELOPMENT_TEAM = DBYGTGKXR7;
 				INFOPLIST_FILE = USBFlux/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.corellium.USBFlux;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
