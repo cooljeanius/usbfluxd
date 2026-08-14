@@ -31,6 +31,7 @@ fi
 LT_INIT([win32-dll])
 LT_LANG([C])
 AC_DEFUN([AC_REQUIRE_PROGS],[
+  AC_REQUIRE([AC_PROG_AR])dnl
   AC_REQUIRE([AC_PROG_CC])dnl
   AC_REQUIRE([AC_PROG_CPP])dnl
   AC_REQUIRE([AM_PROG_CC_C_O])dnl
@@ -85,11 +86,11 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h features.h mach/mach_time.h netdb.h \
                   netinet/in.h sys/statvfs.h sys/time.h syslog.h])dnl
 
 if test "x${ac_cv_header_stdint_h}" = "x"; then
-  test -z "${ac_cv_header_stdint_h}"
+  test -z "${ac_cv_header_stdint_h}" || unset ac_cv_header_stdint_h
   AC_CHECK_HEADERS([stdint.h])
 fi
 if test "x${ac_cv_header_unistd_h}" = "x"; then
-  test -z "${ac_cv_header_unistd_h}"
+  test -z "${ac_cv_header_unistd_h}" || unset ac_cv_header_unistd_h
   AC_CHECK_HEADERS([unistd.h])
 fi
 
