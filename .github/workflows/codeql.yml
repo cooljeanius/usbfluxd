@@ -1,3 +1,4 @@
+---
 # For most projects, this workflow file will not need changing; you simply need
 # to commit it to your repository.
 #
@@ -38,10 +39,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'c-cpp' ]
-        # CodeQL supports [ 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift' ]
-        # Use only 'java-kotlin' to analyze code written in Java, Kotlin or both
-        # Use only 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
+        language: [ 'actions', 'c-cpp' ]
+        # CodeQL supports:
+        # 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin',
+        # 'javascript-typescript', 'python', 'ruby', 'swift'
+        # Use only 'java-kotlin' to analyze code written in Java, Kotlin, or both
+        # Use only 'javascript-typescript' to analyze code written in JavaScript,
+        # TypeScript, or both
         # Learn more about CodeQL language support at:
         # https://aka.ms/codeql-docs/language-support
 
@@ -63,6 +67,7 @@ jobs:
         # queries: security-extended,security-and-quality
 
     - name: Install dependencies
+      if: matrix.language == 'c-cpp'
       run: |
         if test -x "$(which brew)"; then
           brew install make automake autoconf libtool pkg-config gcc libimobiledevice usbmuxd
@@ -73,10 +78,10 @@ jobs:
         fi
 
     - name: Build
-    # Command-line programs to run using the OS shell.
-    # See:
-    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-
+      if: matrix.language == 'c-cpp'
+      # Command-line programs to run using the OS shell.
+      # See:
+      # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
       run: |
         echo "Run, Build Application using script"
         ls
