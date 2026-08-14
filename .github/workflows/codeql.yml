@@ -14,10 +14,10 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ "master" ]
+    # The branches below must be a subset of the branches above:
+    branches: ["master"]
   schedule:
     - cron: '43 23 * * 5'
 
@@ -29,7 +29,7 @@ jobs:
     #   - https://gh.io/supported-runners-and-hardware-resources
     #   - https://gh.io/using-larger-runners
     # Consider using larger runners for possible analysis time improvements.
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    runs-on: 'ubuntu-latest'
     timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
     permissions:
       actions: read
@@ -39,13 +39,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'actions', 'c-cpp' ]
+        language: ['actions', 'c-cpp']
         # CodeQL supports:
         # 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin',
         # 'javascript-typescript', 'python', 'ruby', 'swift'
-        # Use only 'java-kotlin' to analyze code written in Java, Kotlin, or both
-        # Use only 'javascript-typescript' to analyze code written in JavaScript,
-        # TypeScript, or both
+        # Use only 'java-kotlin' to analyze code written in Java, Kotlin,
+        # or both
+        # Use only 'javascript-typescript' to analyze code written in
+        # JavaScript, TypeScript, or both
         # Learn more about CodeQL language support at:
         # https://aka.ms/codeql-docs/language-support
 
@@ -58,9 +59,9 @@ jobs:
       uses: github/codeql-action/init@v4.37.6
       with:
         languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
+        # If you wish to specify custom queries, you can do so here or in a conffile.
+        # By default, queries listed here override any specified in a conffile.
+        # Prefix the list here w/"+" to use these queries & those in the conffile.
 
         # For more details on CodeQL's query packs, refer to:
         # https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
@@ -69,12 +70,15 @@ jobs:
     - name: Install dependencies
       if: matrix.language == 'c-cpp'
       run: |
-        if test -x "$(which brew)"; then
-          brew install make automake autoconf libtool pkg-config gcc libimobiledevice usbmuxd
-        elif test -x "$(which apt-get)"; then
-          sudo apt-get update
-          sudo apt-get install make automake autoconf libtool pkg-config gcc libimobiledevice6 libplist-2.0-4 libplist-dev libplist-utils \
-            libusbmuxd6 libusbmuxd-tools usbmuxd socat libavahi-client-dev shellcheck
+        if test -x "$(which brew)"; then \
+          brew install make automake autoconf libtool pkg-config gcc \
+            libimobiledevice usbmuxd; \
+        elif test -x "$(which apt-get)"; then \
+          sudo apt-get update \
+          sudo apt-get install make automake autoconf libtool pkg-config gcc \
+            libimobiledevice6 libplist-2.0-4 libplist-dev libplist-utils \
+            libusbmuxd6 libusbmuxd-tools usbmuxd socat libavahi-client-dev \
+            shellcheck; \
         fi
 
     - name: Build
@@ -92,8 +96,10 @@ jobs:
         make check
 
     - name: Debug failure
+      if: "${{ failure() }}"
       run: |
-        if test -r config.log; then cat config.log && wc -l config.log; elif test -e config.log; then stat config.log; else ls -AR; fi
+        if test -r config.log; then cat config.log && wc -l config.log; \
+        elif test -e config.log; then stat config.log; else ls -AR; fi
         echo "looking for libplist.a..."
         if test -x "$(which locate)"; then \
           echo "attempting to use locate..."; \
@@ -113,7 +119,6 @@ jobs:
         else \
           echo "unsure how to find a static libplist!"; \
         fi
-      if: "${{ failure() }}"
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4.37.6
